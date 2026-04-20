@@ -67,8 +67,6 @@ int main()
 					   0.0f); // 2
 		}
 
-		
-
 		glEnd();
 
 		/* Swap front and back buffers */
