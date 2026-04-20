@@ -77,8 +77,8 @@ int main()
 		points.push_back(0.0f);
 	}
 	//2nd vertex
-	points.push_back(0.5f);
-	points.push_back(0.5f);
+	points.push_back(0.0f);
+	points.push_back(-0.5f);
 	points.push_back(0.0f);
 
 	//game loop
@@ -89,8 +89,16 @@ int main()
 		glClearColor(0.1f, 0.5f, 0.4f, 1.0f);
 
 		//logic
+		glPointSize(8.0f);
+		glBegin(GL_POINTS);
+		for (int i = 0; i < points.size(); i += 3)
+		{
+			glVertex3f(points[i], points[i + 1], points[i + 2]);
+		}
+		glEnd();
+
 		glLineWidth(5.0f);
-		glBegin(GL_LINE_LOOP);
+		glBegin(GL_LINE_STRIP);
 		
 		for (int i = 0; i < points.size(); i+=3)
 		{
