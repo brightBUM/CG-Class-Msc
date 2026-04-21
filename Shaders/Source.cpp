@@ -43,8 +43,11 @@ int main()
 	 0.0f,  0.5f, 0.0f
 	};
 	//VBO - vertex buffer object
-	unsigned int VBO;
+	//VAO - vertex array object
+	unsigned int VBO,VAO;
 	glGenBuffers(1, &VBO);
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
 	//Binding the buffer - selecting current buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	//assign vertex data to buffer
@@ -54,10 +57,18 @@ int main()
 
 #pragma region Shaders
 
+	Shader defaultShader = Shader("Resources/Shaders/default.vert",
+								  "Resources/Shaders/default.frag");
+	defaultShader.use();
+
+	//linking attributes
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
 	
 
-
 #pragma endregion
+
+
 
 #pragma region RenderLoop
 
@@ -71,7 +82,9 @@ int main()
 		glClearColor(0.1f, 0.5f, 0.4f, 1.0f);
 
 		//logic
-
+		defaultShader.use();
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		
 
 		/* Swap front and back buffers */
