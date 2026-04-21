@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Circle Renderer", "Circle R
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Line Renderer", "Line Renderer\Line Renderer.vcxproj", "{3B9779F4-5256-484A-AC05-90A2516FE7B1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Flag", "Flag\Flag.vcxproj", "{6C16E8BC-0722-4A5D-9A58-2532677ED065}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{3B9779F4-5256-484A-AC05-90A2516FE7B1}.Release|x64.Build.0 = Release|x64
 		{3B9779F4-5256-484A-AC05-90A2516FE7B1}.Release|x86.ActiveCfg = Release|Win32
 		{3B9779F4-5256-484A-AC05-90A2516FE7B1}.Release|x86.Build.0 = Release|Win32
+		{6C16E8BC-0722-4A5D-9A58-2532677ED065}.Debug|x64.ActiveCfg = Debug|x64
+		{6C16E8BC-0722-4A5D-9A58-2532677ED065}.Debug|x64.Build.0 = Debug|x64
+		{6C16E8BC-0722-4A5D-9A58-2532677ED065}.Debug|x86.ActiveCfg = Debug|Win32
+		{6C16E8BC-0722-4A5D-9A58-2532677ED065}.Debug|x86.Build.0 = Debug|Win32
+		{6C16E8BC-0722-4A5D-9A58-2532677ED065}.Release|x64.ActiveCfg = Release|x64
+		{6C16E8BC-0722-4A5D-9A58-2532677ED065}.Release|x64.Build.0 = Release|x64
+		{6C16E8BC-0722-4A5D-9A58-2532677ED065}.Release|x86.ActiveCfg = Release|Win32
+		{6C16E8BC-0722-4A5D-9A58-2532677ED065}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

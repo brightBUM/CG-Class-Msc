@@ -19,14 +19,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
 	{
-		clicked = true;
 		points.push_back(worldX);
 		points.push_back(worldY);
-		points.push_back(0.0f);
 
-		Log(worldX);
-		Log(worldY);
-
+		/*Log(worldX);
+		Log(worldY);*/
+		Log("xPos : " << worldX << " , yPos : " << worldY);
+		//Log("points : " << points.size()/2);
 	}
 }
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
@@ -36,11 +35,6 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 	worldX = xpos / (double)Width * 2.0f - 1.0f;
 	worldY = 1.0f - ypos / (double)Height * 2.0f;
 
-	if (clicked)
-	{
-		
-		clicked = false;
-	}
 	/*Log(worldX);
 	Log(worldY);*/
 }
@@ -72,14 +66,13 @@ int main()
 	
 	
 	//1st vertex
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		points.push_back(0.0f);
 	}
 	//2nd vertex
 	points.push_back(0.0f);
 	points.push_back(-0.5f);
-	points.push_back(0.0f);
 
 	//game loop
 	while (!glfwWindowShouldClose(window))
@@ -89,22 +82,23 @@ int main()
 		glClearColor(0.1f, 0.5f, 0.4f, 1.0f);
 
 		//logic
-		glPointSize(8.0f);
-		glBegin(GL_POINTS);
-		for (int i = 0; i < points.size(); i += 3)
-		{
-			glVertex3f(points[i], points[i + 1], points[i + 2]);
-		}
-		glEnd();
 
 		glLineWidth(5.0f);
 		glBegin(GL_LINE_STRIP);
-		
-		for (int i = 0; i < points.size(); i+=3)
+		glColor3f(1.0f, 1.0f, 1.0f);
+		for (int i = 0; i < points.size(); i+=2)
 		{
-			glVertex3f(points[i], points[i + 1], points[i + 2]);
+			glVertex3f(points[i], points[i + 1], 0.0f);
 		}
+		glEnd();
 
+		glPointSize(10.0f);
+		glBegin(GL_POINTS);
+		glColor3f(1.0f, 0.5f, 0.0f);
+		for (int i = 0; i < points.size(); i += 2)
+		{
+			glVertex3f(points[i], points[i + 1], 0.0f);
+		}
 		glEnd();
 
 		/* Swap front and back buffers */
