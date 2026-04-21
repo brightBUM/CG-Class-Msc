@@ -1,6 +1,7 @@
 #include <iostream>
 #include"glad/glad.h"
 #include"GLFW/glfw3.h"
+#include"Shader.h"
 
 #define HEIGHT 600
 #define WIDTH 800
@@ -10,6 +11,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main()
 {
+#pragma region WindowCreation
+
 	//create a window
 	glfwInit();
 	GLFWwindow* window;
@@ -30,6 +33,9 @@ int main()
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
+#pragma endregion
+
+#pragma region Vertex Buffer
 
 	float vertices[] = {
 	-0.5f, -0.5f, 0.0f,
@@ -44,8 +50,18 @@ int main()
 	//assign vertex data to buffer
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+#pragma endregion
+
+#pragma region Shaders
+
 	
-	
+
+
+#pragma endregion
+
+#pragma region RenderLoop
+
+
 	std::cout << "starting game loop -" << std::endl;
 	//game loop
 	while (!glfwWindowShouldClose(window))
@@ -71,6 +87,8 @@ int main()
 
 	//std::cout << "Hola " << std::endl;
 	return 0;
+#pragma endregion
+
 }
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
