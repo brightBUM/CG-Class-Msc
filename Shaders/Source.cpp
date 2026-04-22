@@ -57,18 +57,16 @@ int main()
 
 #pragma region Shaders
 
-	Shader defaultShader = Shader("Resources/Shaders/default.vert",
-								  "Resources/Shaders/default.frag");
-	defaultShader.use();
-
 	//linking attributes
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	
+	Shader defaultShader("Resources/Shaders/default.vert",
+						 "Resources/Shaders/default.frag");
+
+	defaultShader.use();
 
 #pragma endregion
-
-
 
 #pragma region RenderLoop
 
@@ -98,7 +96,6 @@ int main()
 
 	glfwTerminate();
 
-	//std::cout << "Hola " << std::endl;
 	return 0;
 #pragma endregion
 
