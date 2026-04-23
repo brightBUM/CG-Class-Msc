@@ -40,9 +40,9 @@ int main()
 	float vertices[] = 
 	{
 		//pos                //col
-		-0.5f, -0.5f, 0.0f,	 1.0f, 0.5f, 0.0f, // point -1
+		-0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f, // point -1
 		 0.5f, -0.5f, 0.0f,	 0.0f, 1.0f, 0.0f, // point -2
-		 0.0f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f	// point -3
+		 0.0f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f  // point -3
 	};
 	//VBO - vertex buffer object
 	//VAO - vertex array object
