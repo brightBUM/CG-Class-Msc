@@ -3,8 +3,8 @@
 #include"GLFW/glfw3.h"
 #include"Shader.h"
 
-#define HEIGHT 600
-#define WIDTH 800
+#define HEIGHT 800
+#define WIDTH 600
 #define Log(x) std::cout<<x<<std::endl;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -37,10 +37,12 @@ int main()
 
 #pragma region Vertex Buffer
 
-	float vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f
+	float vertices[] = 
+	{
+		//pos                //col
+		-0.5f, -0.5f, 0.0f,	 1.0f, 0.5f, 0.0f, // point -1
+		 0.5f, -0.5f, 0.0f,	 0.0f, 1.0f, 0.0f, // point -2
+		 0.0f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f	// point -3
 	};
 	//VBO - vertex buffer object
 	//VAO - vertex array object
@@ -58,8 +60,15 @@ int main()
 #pragma region Shaders
 
 	//linking attributes
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//1st - para - layout location(in vertex shader)
+	//2nd - para - size of the component;
+	//5th - para - total size of the vertex/point
+	//6th - para - offset within the vertex size
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+	glEnableVertexAttribArray(1);
 	
 	Shader defaultShader("Resources/Shaders/default.vert",
 						 "Resources/Shaders/default.frag");
