@@ -11,6 +11,7 @@ private:
 public:
 	unsigned int ID;
 	Shader(const char* vertexPath, const char* fragmentPath);
+	void SetFloat(const std::string& name, float value);
 	void use();
 	
 };

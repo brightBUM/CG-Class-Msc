@@ -79,7 +79,7 @@ int main()
 
 #pragma region RenderLoop
 
-
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	std::cout << "starting game loop -" << std::endl;
 	//game loop
 	while (!glfwWindowShouldClose(window))
@@ -90,9 +90,12 @@ int main()
 
 		//logic
 		defaultShader.use();
+		defaultShader.SetFloat("time", glfwGetTime());
+		
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		
+		//Log(glfwGetTime());
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);

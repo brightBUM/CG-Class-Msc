@@ -87,3 +87,8 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type)
         }
     }
 }
+
+void Shader::SetFloat(const std::string& name, float value)
+{
+    glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+}
