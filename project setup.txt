@@ -1,9 +1,18 @@
 - GLFW- Downloads - download 64 bit pre compiled binaries
-- GLAD - generate - open gl 4.6 - compatibility 
+- GLAD - generate - open gl 4.6 - compatibility profile
 - create a empty C++ project  - diff solution & project
 - create empty folders in solution root - deps - include & lib
 - copy include and lib from glfw into project folders
 - project settings - add include and lib path in vc++ directory
 - add glfw3.h header and check errors
-- project settings - linker- input - add additional dependency - glfw3.lib
-- 
+- copy lib from glad into project lib folder
+- add glad.c from glad/src into solution root
+- project settings - linker- input - add additional dependency - glfw3.lib and opengl32.lib
+- compile and run the window documentation from GLFW site  - It should draw a black window
+
+Solution/Project - same properties
+- visual studio - view - other window - properties manager
+- in properties manager select - Debug|x64 - create a property sheet for one project 
+  (follow the same process as project settings)
+- after you create 2nd project - instead of creating , choose existing properties sheet from 1st project
+- solution - properties - change from single startup to current selection 
