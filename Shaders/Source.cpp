@@ -2,12 +2,15 @@
 #include"glad/glad.h"
 #include"GLFW/glfw3.h"
 #include"Shader.h"
-
+#define STB_IMAGE_IMPLEMENTATION
+#include"stb_image.h"
 #define HEIGHT 800
 #define WIDTH 600
 #define Log(x) std::cout<<x<<std::endl;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
+void LoadTexture(unsigned int& texture);
 
 int main()
 {
@@ -35,14 +38,14 @@ int main()
 	}
 #pragma endregion
 
-#pragma region Vertex Buffer
+#pragma region Vertex Buffer & Texture
 
 	float vertices[] = 
 	{
-		//pos                //col
-		-0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f, // point -1
-		 0.5f, -0.5f, 0.0f,	 0.0f, 1.0f, 0.0f, // point -2
-		 0.0f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f  // point -3
+		//pos                //col             //tex coords
+		-0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f, 0.0f,0.0f, // point -1
+		 0.5f, -0.5f, 0.0f,	 0.0f, 1.0f, 0.0f, 1.0f,0.0f, // point -2
+		 0.0f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 0.5f,1.0f  // point -3
 	};
 	//VBO - vertex buffer object
 	//VAO - vertex array object
@@ -55,6 +58,9 @@ int main()
 	//assign vertex data to buffer
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+
+	unsigned int texture;
+	LoadTexture(texture);
 #pragma endregion
 
 #pragma region Shaders
@@ -64,12 +70,14 @@ int main()
 	//2nd - para - size of the component;
 	//5th - para - total size of the vertex/point
 	//6th - para - offset within the vertex size
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
 	glEnableVertexAttribArray(1);
-	
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8* sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 	Shader defaultShader("Resources/Shaders/default.vert",
 						 "Resources/Shaders/default.frag");
 
@@ -91,7 +99,10 @@ int main()
 		//logic
 		defaultShader.use();
 		defaultShader.SetFloat("time", glfwGetTime());
-		
+		//Log(glfwGetTime());
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		
@@ -111,6 +122,25 @@ int main()
 	return 0;
 #pragma endregion
 
+}
+void LoadTexture(unsigned int& texture)
+{
+	glGenTextures(1, &texture);
+
+	glBindTexture(GL_TEXTURE_2D, texture);
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("Resources/Textures/IMG_3979.png", &width, &height, &nrChannels, 0);
+
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
 }
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
