@@ -61,8 +61,10 @@ int main()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 
-	unsigned int texture;
-	LoadTexture(texture, "Resources/Textures/test.jpeg");
+	unsigned int texture_1,texture_2;
+	LoadTexture(texture_1, "Resources/Textures/test.jpeg");
+	LoadTexture(texture_2, "Resources/Textures/raman.png");
+	
 #pragma endregion
 
 #pragma region Shaders
@@ -84,7 +86,8 @@ int main()
 						 "Resources/Shaders/default.frag");
 
 	defaultShader.use();
-
+	defaultShader.SetInt("texSampler_1", 0);
+	defaultShader.SetInt("texSampler_2", 1);
 #pragma endregion
 
 #pragma region RenderLoop
@@ -104,7 +107,11 @@ int main()
 		//Log(glfwGetTime());
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		glBindTexture(GL_TEXTURE_2D, texture_1);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture_2);
+
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		
