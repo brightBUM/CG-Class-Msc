@@ -10,7 +10,7 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-void LoadTexture(unsigned int& texture);
+void LoadTexture(unsigned int& texture,const char* fileName);
 
 int main()
 {
@@ -36,6 +36,8 @@ int main()
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
+
+	stbi_set_flip_vertically_on_load(true);
 #pragma endregion
 
 #pragma region Vertex Buffer & Texture
@@ -60,7 +62,7 @@ int main()
 
 
 	unsigned int texture;
-	LoadTexture(texture);
+	LoadTexture(texture, "Resources/Textures/test.jpeg");
 #pragma endregion
 
 #pragma region Shaders
@@ -123,17 +125,29 @@ int main()
 #pragma endregion
 
 }
-void LoadTexture(unsigned int& texture)
+void LoadTexture(unsigned int& texture,const char* fileName)
 {
 	glGenTextures(1, &texture);
 
 	glBindTexture(GL_TEXTURE_2D, texture);
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load("Resources/Textures/IMG_3979.png", &width, &height, &nrChannels, 0);
-
+	unsigned char* data = stbi_load(fileName, &width, &height, &nrChannels, 0);
+	Log(nrChannels);
 	if (data)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		switch (nrChannels)
+		{
+		case 3: // jpg format
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			break;
+		case 4:// png format
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			break;
+		default:
+			Log("invalid image channels")
+			break;
+		}
+		
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
