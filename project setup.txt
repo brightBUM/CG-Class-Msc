@@ -16,3 +16,15 @@ Solution/Project - same properties
   (follow the same process as project settings)
 - after you create 2nd project - instead of creating , choose existing properties sheet from 1st project
 - solution - properties - change from single startup to current selection 
+
+
+Common library
+- add a new project - instead of selecting empty c++ , choose static library project
+- common project add the property sheet from property manager
+- common project - project setting - c++- precompiled headers - select not using precompiled header
+- add shader.h,glad.c,camera.h into this common library
+
+Referencing the Common library
+- project properties - c++ - general - Additional include directories - add the common library folder
+- right click project - references - add reference - check common library 
+- now the current project should read & compile shader.h & glad.c from common library

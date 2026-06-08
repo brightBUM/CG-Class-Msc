@@ -1,6 +1,5 @@
 #include "Shader.h"
 
-
 // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
@@ -96,3 +95,4 @@ void Shader::SetInt(const std::string& name, int value)
 {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
+

@@ -8,8 +8,9 @@ void main()
 //      FragColor = vec4(Color, 1.0f);
 //    FragColor = vec4(Color.x,Color.y,Color.z, 1.0f);
     FragColor = vec4(Color*sin(time), 1.0f);
-//
 
-//    FragColor = vec4(Color.xy,Color.z,1.0f);  //swizzling
+//swizzling
+
+//    FragColor = vec4(Color.xy,Color.z,1.0f);  
 //    FragColor = vec4(Color.rgb,1.0f);
 } 
