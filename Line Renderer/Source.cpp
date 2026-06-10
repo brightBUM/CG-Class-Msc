@@ -85,7 +85,7 @@ int main()
 
 		glLineWidth(5.0f);
 		glBegin(GL_LINE_STRIP);
-		glColor3f(1.0f, 1.0f, 1.0f);
+		glColor3f(sin(glfwGetTime()*3.0f), 1.0f, 1.0f);
 		for (int i = 0; i < points.size(); i+=2)
 		{
 			glVertex3f(points[i], points[i + 1], 0.0f);
