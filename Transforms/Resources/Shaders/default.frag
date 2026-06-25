@@ -11,5 +11,5 @@ void main()
 	vec4 texValue_0 = texture(texSampler_0,TexCoord);
 	vec4 texValue_1 = texture(texSampler_1,TexCoord);
 	FragColor = vec4(mix(texValue_0,texValue_1,0.0f));
-	FragColor = vec4(1.0f);
+//	FragColor = vec4(1.0f);
 } 

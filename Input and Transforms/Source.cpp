@@ -2,14 +2,21 @@
 #include"glad/glad.h"
 #include"GLFW/glfw3.h"
 #include"Shader.h"
+#include<math.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include"stb_image.h"
 #include"glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-#define HEIGHT 800
-#define WIDTH 600
+#define HEIGHT 600
+#define WIDTH 800
 #define Log(x) std::cout<<x<<std::endl;
 
+float xPos, yPos;
+float paddleSpeed =2.0f;
+glm::vec2 centre(0.5f, 0.5f);
+float radius = 0.5f;
+
+bool wHeld;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void LoadTexture(unsigned int& texture, const char* fileName)
 {
@@ -43,7 +50,28 @@ void LoadTexture(unsigned int& texture, const char* fileName)
 	}
 	stbi_image_free(data);
 }
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_W && (action == GLFW_PRESS|| action == GLFW_REPEAT) )
+	{
+		//inc
 
+		if (yPos <= 0.75)
+			yPos += 0.1f*paddleSpeed;
+
+		
+	}
+	
+
+	else if(key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
+
+		//dec
+		if (yPos >= -0.75f)
+			yPos -= 0.1f*paddleSpeed;
+
+	}
+}
 int main()
 {
 #pragma region WindowCreation
@@ -59,8 +87,10 @@ int main()
 
 	//setting the context
 	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+	//callback functions
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetKeyCallback(window, key_callback);
 
 	//glad loader
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -117,20 +147,23 @@ int main()
 
 	Shader defaultShader("Resources/Shaders/default.vert",
 		"Resources/Shaders/default.frag");
+	Shader circleShader("Resources/Shaders/default.vert",
+		"Resources/Shaders/circle.frag");
 
 	defaultShader.use();
+	circleShader.use();
 
 	unsigned int texture_0, texture_1;
 	LoadTexture(texture_0, "Resources/Textures/cat_open.png");
-	LoadTexture(texture_1, "Resources/Textures/cat_close.png");
-	defaultShader.SetInt("texSampler_0", 0);
-	defaultShader.SetInt("texSampler_1", 1);
+	//LoadTexture(texture_1, "Resources/Textures/cat_close.png");
+	circleShader.SetInt("texSampler_0", 0);
+	//defaultShader.SetInt("texSampler_1", 1);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_0);
 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture_1);
+	/*glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture_1);*/
 #pragma endregion
 
 #pragma region RenderLoop
@@ -138,6 +171,7 @@ int main()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	xPos = -0.8f;
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	std::cout << "starting game loop -" << std::endl;
 	//game loop
@@ -153,24 +187,29 @@ int main()
 
 
 		/*glm::vec4 vectorA = glm::vec4(5.0f, 3.0f, 0.0f, 1.0f);*/
+		//draw paddle
+		glm::mat4 paddleMatrix = glm::mat4(1.0f);
+		Log(yPos);
+		paddleMatrix = glm::translate(paddleMatrix, glm::vec3(xPos,yPos, 0.0f));
+		paddleMatrix = glm::scale(paddleMatrix, glm::vec3(0.1f, 0.5f, 0.0f));
+
+		defaultShader.SetMat4("translate", paddleMatrix);
+
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
-		for (float i = 0.0f; i < 4; i++)
-		{
-			for (float j = 0.0f; j < 4; j++)
-			{
-				glm::mat4 trans = glm::mat4(1.0f);
+		//draw circle
+		glm::mat4 circleMatrix = glm::mat4(1.0f);
+		circleMatrix = glm::scale(circleMatrix, glm::vec3(0.4f, 0.5f, 0.0f));
+		circleShader.use();
+		circleShader.SetFloat("centreX", centre.x);
+		circleShader.SetFloat("centreY", centre.y);
+		circleShader.SetFloat("radius", radius);
+		circleShader.SetMat4("translate", circleMatrix);
 
-				trans = glm::translate(trans, glm::vec3(-0.25f + i * 0.3f, -0.25f+ j * 0.3f, 0.0f));
-				trans = glm::scale(trans, glm::vec3(0.25));
-				trans = glm::rotate(trans, ((i*0.25f)+(j*0.25f))*(float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-				defaultShader.SetMat4("translate", trans);
-
-				glBindVertexArray(VAO);
-				glDrawArrays(GL_TRIANGLES, 0, 6);
-			}
-		}
-
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		//Log(glfwGetTime());
 
 		/* Swap front and back buffers */
