@@ -1,5 +1,5 @@
 #include "Circle.h"
-
+#include"Common.h"
 Circle::Circle(glm::vec3 pos,glm::vec3 vel)
 {
 	this->pos = pos;
@@ -10,7 +10,7 @@ Circle::Circle(glm::vec3 pos,glm::vec3 vel)
 
 void Circle::Move()
 {
-	this->pos += this->vel;
+	this->pos += this->vel*(float)deltaTime;
 }
 
 void Circle::CheckBounds()

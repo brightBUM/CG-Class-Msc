@@ -12,7 +12,6 @@
 #include"Circle.h"
 #include<vector>
 #include"Common.h"
-
 float xPos, yPos;
 float paddleSpeed = 2.0f;
 glm::vec2 centre(0.5f, 0.5f);
@@ -90,7 +89,7 @@ int main()
 
 	//setting the context
 	glfwMakeContextCurrent(window);
-
+	//glfwSwapInterval(0);
 	//callback functions
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetKeyCallback(window, key_callback);
@@ -184,10 +183,12 @@ int main()
 	{
 		for (int j = 0; j < 2; j++)
 		{
-			glm::vec3 vel = glm::vec3((i % 2 == 0 ? -0.01f : 0.01f),
-									  (i % 2 == 0 ? 0.01f : -0.01f), 0.0f);
-			vel *= 0.25f;
-			circles.push_back(Circle(glm::vec3(-0.5f + 0.26f * i, 0.5f + (-1.0f) * j, 0.0f), vel));
+			glm::vec3 vel = glm::vec3(Random::RandomInt(-1,1),
+									  Random::RandomInt(-1, 1), 0.0f);
+			vel *= Random::RandomFloat(0.1f,1.0f);
+			circles.push_back(Circle(glm::vec3(
+				Random::RandomFloat(-1.0f+radius, 1.0f-radius), 
+				Random::RandomFloat(-1.0f + radius, 1.0f - radius),0.0f), vel));
 		}
 		
 	}
@@ -199,6 +200,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.1f, 0.5f, 0.4f, 1.0f);
 
+		FPSCounter(window);
 		//logic
 		defaultShader.use();
 		defaultShader.SetFloat("time", glfwGetTime());
@@ -215,9 +217,13 @@ int main()
 				auto& circle1 = circles[i];
 				auto& circle2 = circles[j];
 				float distance = glm::distance(circle1.pos, circle2.pos);
-
-				if (distance < (circle1.radius * circle1.scale.x) + (circle2.radius * circle2.scale.x))
+				float radiusSum = (circle1.radius * circle1.scale.x) + (circle2.radius * circle2.scale.x);
+				if (distance <= radiusSum)
 				{
+					glm::vec3 normal = glm::normalize(circle2.pos - circle1.pos);
+					float overLap = radiusSum - distance;
+					circle1.pos -= normal * (overLap * 0.5f);
+					circle2.pos += normal * (overLap * 0.5f);
 					//Log(circle1.vel.x);
 					circle1.vel = -circle1.vel;
 					//Log(circle1.vel.x);
