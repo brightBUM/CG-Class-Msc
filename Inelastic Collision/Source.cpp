@@ -7,10 +7,12 @@
 #include"stb_image.h"
 #include"glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-#define HEIGHT 600
-#define WIDTH 600
-#define Log(x) std::cout<<x<<std::endl;
+#define HEIGHT 1200
+#define WIDTH 1200
 #include"Circle.h"
+#include<vector>
+#include"Common.h"
+
 float xPos, yPos;
 float paddleSpeed = 2.0f;
 glm::vec2 centre(0.5f, 0.5f);
@@ -171,13 +173,24 @@ int main()
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	xPos = -0.8f;
+	
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	std::cout << "starting game loop -" << std::endl;
 	
-	Circle circle1(glm::vec3(0.5f, 0.5f,0.0f), glm::vec3(0.02f, 0.01f, 0.0f));
-	Circle circle2(glm::vec3(-0.5f, 0.5f,0.0f), glm::vec3(-0.02f, 0.02f, 0.0f));
+	std::vector<Circle> circles;
+
+	for (int i = 0; i < 5; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			glm::vec3 vel = glm::vec3((i % 2 == 0 ? -0.01f : 0.01f),
+									  (i % 2 == 0 ? 0.01f : -0.01f), 0.0f);
+			vel *= 0.25f;
+			circles.push_back(Circle(glm::vec3(-0.5f + 0.26f * i, 0.5f + (-1.0f) * j, 0.0f), vel));
+		}
+		
+	}
 	
 	//game loop
 	while (!glfwWindowShouldClose(window))
@@ -191,68 +204,54 @@ int main()
 		defaultShader.SetFloat("time", glfwGetTime());
 
 
-		/*glm::vec4 vectorA = glm::vec4(5.0f, 3.0f, 0.0f, 1.0f);*/
-		//draw paddle
-		//glm::mat4 paddleMatrix = glm::mat4(1.0f);
-		//Log(yPos);
-		//paddleMatrix = glm::translate(paddleMatrix, glm::vec3(xPos,yPos, 0.0f));
-		////paddleMatrix = glm::scale(paddleMatrix, glm::vec3(0.1f, 0.5f, 0.0f));
-
-		//defaultShader.SetMat4("translate", paddleMatrix);
-
-		//glBindVertexArray(VAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 6);
-
-
 		//draw circle
-		//circleX += velX;
-		//circleY += velY;
-		float distance = glm::distance(circle1.pos, circle2.pos);
-		if (distance < (circle1.radius * circle1.scale.x) + (circle2.radius * circle2.scale.x))
-		{
-			//Log(circle1.vel.x);
-			circle1.vel = -circle1.vel;
-			//Log(circle1.vel.x);
-			circle2.vel = -circle2.vel;
-		}
-
-		circle1.Move();
-		circle2.Move();
-
-		//circle-window collision
-		circle1.CheckBounds();
-		circle2.CheckBounds();
 		
 		//circle-circle collision
+
+		for (int i = 0; i < circles.size() - 1; i++)
+		{
+			for (int j = i+1; j < circles.size(); j++)
+			{
+				auto& circle1 = circles[i];
+				auto& circle2 = circles[j];
+				float distance = glm::distance(circle1.pos, circle2.pos);
+
+				if (distance < (circle1.radius * circle1.scale.x) + (circle2.radius * circle2.scale.x))
+				{
+					//Log(circle1.vel.x);
+					circle1.vel = -circle1.vel;
+					//Log(circle1.vel.x);
+					circle2.vel = -circle2.vel;
+				}
+			}
+			
+		}
 		
 
-		//circle-paddle collision
-
 		glm::mat4 circleMatrix = glm::mat4(1.0f);
-		circleMatrix = glm::translate(circleMatrix, circle1.pos);
-		circleMatrix = glm::scale(circleMatrix, circle1.scale);
-		circleShader.use();
-		circleShader.SetFloat("centreX", centre.x);
-		circleShader.SetFloat("centreY", centre.y);
-		circleShader.SetFloat("radius", circle1.radius);
-		circleShader.SetMat4("translate", circleMatrix);
-		circleShader.SetFloat("time", glfwGetTime());
 
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		for (auto &i : circles)
+		{
+			i.Move();
+			//circle-window collision
+			i.CheckBounds();
 
-		circleMatrix = glm::mat4(1.0f);
-		circleMatrix = glm::translate(circleMatrix, circle2.pos);
-		circleMatrix = glm::scale(circleMatrix, circle2.scale);
-		circleShader.use();
-		circleShader.SetFloat("centreX", centre.x);
-		circleShader.SetFloat("centreY", centre.y);
-		circleShader.SetFloat("radius", circle2.radius);
-		circleShader.SetMat4("translate", circleMatrix);
-		circleShader.SetFloat("time", glfwGetTime());
+			circleShader.use();
+			circleMatrix = glm::mat4(1.0f);
 
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+			circleMatrix = glm::translate(circleMatrix, i.pos);
+			circleMatrix = glm::scale(circleMatrix, i.scale);
+			circleShader.SetMat4("translate", circleMatrix);
+
+			circleShader.SetFloat("centreX", centre.x);
+			circleShader.SetFloat("centreY", centre.y);
+			circleShader.SetFloat("radius", i.radius);
+			circleShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
+			circleShader.SetFloat("time", glfwGetTime());
+
+			glBindVertexArray(VAO);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+		}
 
 
 		//Log(glfwGetTime());

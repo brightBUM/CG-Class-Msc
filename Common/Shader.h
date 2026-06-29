@@ -7,6 +7,7 @@
 #include <iostream>
 #include"glm/glm.hpp"
 #include"glm/gtc/type_ptr.hpp"
+
 class Shader
 {
 private:
@@ -16,6 +17,7 @@ public:
 	Shader();
 	Shader(const char* vertexPath, const char* fragmentPath);
 	void SetFloat(const std::string& name, float value);
+	void SetVec3(const std::string& name, glm::vec3 value);
 	void SetInt(const std::string& name, int value);
 	void SetMat4(const std::string& name, glm::mat4 matrix);
 	void use();

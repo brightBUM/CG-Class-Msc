@@ -135,6 +135,11 @@
   <ItemGroup>
     <ClInclude Include="Circle.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\circle.frag" />
+    <None Include="Resources\Shaders\default.frag" />
+    <None Include="Resources\Shaders\default.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

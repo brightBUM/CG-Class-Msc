@@ -8,6 +8,7 @@ uniform float time;
 uniform float radius;
 uniform float centreX;
 uniform float centreY;
+uniform vec3 objectColor;
 void main()
 {
 	vec4 texValue_0 = texture(texSampler_0,TexCoord);
@@ -15,7 +16,7 @@ void main()
 	
 	if(dis<=radius)
 	{
-		FragColor = vec4(vec3(1.0f,0.5f,0.0f),1.0f);
+		FragColor = vec4(objectColor,1.0f);
 	}
 	else
 	{
