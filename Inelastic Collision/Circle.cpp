@@ -4,8 +4,10 @@ Circle::Circle(glm::vec3 pos,glm::vec3 vel)
 {
 	this->pos = pos;
 	this->vel = vel;
-	this->scale = glm::vec3(0.25f);
+	this->scale = glm::vec3(0.1f);
 	this->radius = 0.5f;
+	this->objectColor = glm::vec3(1.0f, 0.5f, 0.0f);
+	
 }
 
 void Circle::Move()

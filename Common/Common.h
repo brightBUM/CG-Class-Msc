@@ -1,6 +1,6 @@
+#include"Shader.h"
 #include"GLFW/glfw3.h"
 #include<string>
-
 
 namespace Random
 {
@@ -17,3 +17,14 @@ extern int frames;
 
 void FPSCounter(GLFWwindow* window);
 
+namespace Debug
+{
+    void Init();
+    void ShutDown();
+    void SetAssetPath(const char* path);
+    //void BeginFrame();
+    void DrawLine(glm::vec3, glm::vec3, glm::vec3);
+    void DrawArrow(glm::vec3, glm::vec3, glm::vec3);
+    void DrawCircle(glm::vec3 centre, float radius, glm::vec3 color);
+    //void EndFrame();
+}

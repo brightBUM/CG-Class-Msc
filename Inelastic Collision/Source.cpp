@@ -16,9 +16,12 @@ float xPos, yPos;
 float paddleSpeed = 2.0f;
 glm::vec2 centre(0.5f, 0.5f);
 float radius = 0.5f;
-
-bool wHeld;
+float worldX, worldY;
+std::vector<Circle> circles;
+bool flipView = true;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void SpawnCircle();
+void SpawnCircleAtPoint(glm::vec3);
 void LoadTexture(unsigned int& texture, const char* fileName)
 {
 	glGenTextures(1, &texture);
@@ -73,7 +76,21 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		//radius -= 0.1f;
 
 	}
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+	{
+		flipView = !flipView;
+	}
 }
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	//Log("cursor callback");
+	//screen space to ndc
+	worldX = xpos / (double)WIDTH * 2.0f - 1.0f;
+	worldY = 1.0f - ypos / (double)HEIGHT * 2.0f;
+
+	
+}
+
 int main()
 {
 #pragma region WindowCreation
@@ -93,7 +110,8 @@ int main()
 	//callback functions
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetKeyCallback(window, key_callback);
-
+	
+	glfwSetCursorPosCallback(window, cursor_position_callback);
 	//glad loader
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -170,42 +188,62 @@ int main()
 
 #pragma region RenderLoop
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
 	std::cout << "starting game loop -" << std::endl;
 	
-	std::vector<Circle> circles;
 
 	for (int i = 0; i < 5; i++)
 	{
-		for (int j = 0; j < 2; j++)
-		{
-			glm::vec3 vel = glm::vec3(Random::RandomInt(-1,1),
-									  Random::RandomInt(-1, 1), 0.0f);
-			vel *= Random::RandomFloat(0.1f,1.0f);
-			circles.push_back(Circle(glm::vec3(
-				Random::RandomFloat(-1.0f+radius, 1.0f-radius), 
-				Random::RandomFloat(-1.0f + radius, 1.0f - radius),0.0f), vel));
-		}
-		
+		SpawnCircle();
 	}
-	
+	Debug::SetAssetPath("../Common/Resources/");
+	Debug::Init();
+
+	float spawnTimer = 0.0f;
+	const float spawnInterval = 0.05f; // 10 per second
+
 	//game loop
 	while (!glfwWindowShouldClose(window))
 	{
+		if (flipView)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		else
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glDisable(GL_BLEND);
+
+		}
+
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(0.1f, 0.5f, 0.4f, 1.0f);
+		glClearColor(0.6f, 0.2f, 0.4f, 1.0f);
 
 		FPSCounter(window);
 		//logic
 		defaultShader.use();
 		defaultShader.SetFloat("time", glfwGetTime());
 
+		spawnTimer += deltaTime;
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+		{
+			Debug::DrawCircle(glm::vec3(worldX, worldY, 0.0f), 0.5f, glm::vec3(1.0f));
+		}
 
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		{
+			if (spawnTimer >= spawnInterval)
+			{
+				SpawnCircleAtPoint(glm::vec3(worldX, worldY, 0.0f));
+				spawnTimer = 0.0f;
+			}
+		}
+		else
+		{
+			spawnTimer = spawnInterval; // Optional: spawn immediately on next press
+		}
 		//draw circle
 		
 		//circle-circle collision
@@ -252,11 +290,14 @@ int main()
 			circleShader.SetFloat("centreX", centre.x);
 			circleShader.SetFloat("centreY", centre.y);
 			circleShader.SetFloat("radius", i.radius);
-			circleShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
+			circleShader.SetVec3("objectColor", i.objectColor);
 			circleShader.SetFloat("time", glfwGetTime());
+
 
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
+
+			Debug::DrawArrow(i.pos,i.pos+(glm::normalize(i.vel)*0.1f), glm::vec3(1.0f, 1.0f, 0.0f));
 		}
 
 
@@ -269,13 +310,31 @@ int main()
 		glfwPollEvents();
 	}
 
+	Debug::ShutDown();
 	std::cout << "game loop Terminated" << std::endl;
 
 	glfwTerminate();
 
 	return 0;
-#pragma endregion
 
+#pragma endregion
+}
+void SpawnCircle()
+{
+	glm::vec3 vel = glm::vec3(Random::RandomInt(-1, 1),
+		Random::RandomInt(-1, 1), 0.0f);
+	vel *= Random::RandomFloat(0.1f, 1.0f);
+	circles.push_back(Circle(glm::vec3(
+		Random::RandomFloat(-1.0f + radius, 1.0f - radius),
+		Random::RandomFloat(-1.0f + radius, 1.0f - radius), 0.0f), vel));
+}
+void SpawnCircleAtPoint(glm::vec3 pos)
+{
+
+	glm::vec3 vel = glm::vec3(Random::RandomInt(0,10)%2==0?-1:1,
+						      Random::RandomInt(0, 10) % 2 == 0 ? -1 : 1, 0.0f);
+	vel *= Random::RandomFloat(0.1f, 1.0f);
+	circles.push_back(Circle(pos, vel));
 }
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
