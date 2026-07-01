@@ -8,7 +8,7 @@ public:
 	glm::vec3 scale;
 	float radius;
 	Circle(glm::vec3, glm::vec3);
-	void Move();
+	void Move(float);
 	void CheckBounds();
 };
 

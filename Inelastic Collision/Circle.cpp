@@ -8,9 +8,9 @@ Circle::Circle(glm::vec3 pos,glm::vec3 vel)
 	this->radius = 0.5f;
 }
 
-void Circle::Move()
+void Circle::Move(float deltaTime)
 {
-	this->pos += this->vel;
+	this->pos += this->vel*deltaTime;
 }
 
 void Circle::CheckBounds()

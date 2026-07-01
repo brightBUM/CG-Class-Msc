@@ -7,16 +7,25 @@
 #include"stb_image.h"
 #include"glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-#define HEIGHT 1200
-#define WIDTH 1200
+#define HEIGHT 600
+#define WIDTH 600
 #include"Circle.h"
 #include<vector>
-#include"Common.h"
 
 float xPos, yPos;
 float paddleSpeed = 2.0f;
 glm::vec2 centre(0.5f, 0.5f);
 float radius = 0.5f;
+
+//fps variables
+double deltaTime = 0.0;
+double lastFrame = 0.0;
+
+double fps = 0.0;
+double fpsTimer = 0.0;
+double fpsUpdateInterval = 0.5; // half a second
+int frames = 0;
+
 
 bool wHeld;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -75,6 +84,31 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	}
 }
+void FPSCounter(GLFWwindow* window)
+{
+	// --- DELTA TIME ---
+	double currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	// --- FPS COUNTER ---
+	frames++;
+	fpsTimer += deltaTime;
+
+	if (fpsTimer >= fpsUpdateInterval)   // update every 0.5s
+	{
+		fps = frames / fpsTimer;         // true FPS
+		frames = 0;
+		fpsTimer = 0.0;
+
+		std::string title =
+			"CG_Class | FPS: " + std::to_string((int)fps) +
+			" | delta: " + std::to_string(deltaTime);
+
+		glfwSetWindowTitle(window, title.c_str());
+	}
+}
+
 int main()
 {
 #pragma region WindowCreation
@@ -94,7 +128,7 @@ int main()
 	//callback functions
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetKeyCallback(window, key_callback);
-
+	glfwSwapInterval(0);
 	//glad loader
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -203,7 +237,7 @@ int main()
 		defaultShader.use();
 		defaultShader.SetFloat("time", glfwGetTime());
 
-
+		FPSCounter(window);
 		//draw circle
 		
 		//circle-circle collision
@@ -232,7 +266,7 @@ int main()
 
 		for (auto &i : circles)
 		{
-			i.Move();
+			i.Move(deltaTime);
 			//circle-window collision
 			i.CheckBounds();
 
