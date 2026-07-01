@@ -128,7 +128,7 @@ int main()
 	//callback functions
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetKeyCallback(window, key_callback);
-	glfwSwapInterval(0);
+	//glfwSwapInterval(0);
 	//glad loader
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -191,7 +191,7 @@ int main()
 	circleShader.use();
 
 	unsigned int texture_0, texture_1;
-	LoadTexture(texture_0, "Resources/Textures/cat_open.png");
+	LoadTexture(texture_0, "Resources/Textures/water.png");
 	//LoadTexture(texture_1, "Resources/Textures/cat_close.png");
 	circleShader.SetInt("texSampler_0", 0);
 	//defaultShader.SetInt("texSampler_1", 1);
@@ -203,7 +203,6 @@ int main()
 	glBindTexture(GL_TEXTURE_2D, texture_1);*/
 #pragma endregion
 
-#pragma region RenderLoop
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -214,18 +213,19 @@ int main()
 	
 	std::vector<Circle> circles;
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 1; i++)
 	{
-		for (int j = 0; j < 2; j++)
+		for (int j = 0; j < 1; j++)
 		{
 			glm::vec3 vel = glm::vec3((i % 2 == 0 ? -0.01f : 0.01f),
 									  (i % 2 == 0 ? 0.01f : -0.01f), 0.0f);
-			vel *= 0.25f;
-			circles.push_back(Circle(glm::vec3(-0.5f + 0.26f * i, 0.5f + (-1.0f) * j, 0.0f), vel));
+			vel *=0.0f;
+			circles.push_back(Circle(glm::vec3(-0.5f + 0.27f * i, 0.5f + (-1.0f) * j, 0.0f), vel));
 		}
 		
 	}
 	
+#pragma region RenderLoop
 	//game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -274,7 +274,7 @@ int main()
 			circleMatrix = glm::mat4(1.0f);
 
 			circleMatrix = glm::translate(circleMatrix, i.pos);
-			circleMatrix = glm::scale(circleMatrix, i.scale);
+			//circleMatrix = glm::scale(circleMatrix, i.scale);
 			circleShader.SetMat4("translate", circleMatrix);
 
 			circleShader.SetFloat("centreX", centre.x);
@@ -282,7 +282,7 @@ int main()
 			circleShader.SetFloat("radius", i.radius);
 			circleShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
 			circleShader.SetFloat("time", glfwGetTime());
-
+			circleShader.SetVec3("dir", i.vel);
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
