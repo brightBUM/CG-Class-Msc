@@ -15,5 +15,6 @@ public:
 	Circle(glm::vec3, glm::vec3);
 	void Move();
 	void CheckBounds();
+	float GetScaledRadius();
 };
 

@@ -219,7 +219,7 @@ int main()
 
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(0.6f, 0.2f, 0.4f, 1.0f);
+		glClearColor(0.376f, 0.424f, 0.22f, 1.0f);
 
 		FPSCounter(window);
 		//logic
@@ -227,11 +227,7 @@ int main()
 		defaultShader.SetFloat("time", glfwGetTime());
 
 		spawnTimer += deltaTime;
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-		{
-			Debug::DrawCircle(glm::vec3(worldX, worldY, 0.0f), 0.5f, glm::vec3(1.0f));
-		}
-
+		
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
 			if (spawnTimer >= spawnInterval)
@@ -244,13 +240,33 @@ int main()
 		{
 			spawnTimer = spawnInterval; // Optional: spawn immediately on next press
 		}
+
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+		{
+			Debug::DrawCircle(glm::vec3(worldX, worldY, 0.0f), 0.5f, glm::vec3(1.0f));
+
+			for (auto it = circles.begin(); it != circles.end(); )
+			{
+				if (Collision::Circle_Point(glm::vec3(worldX, worldY, 0.0f),
+					0.5f,
+					it->pos))
+				{
+					it = circles.erase(it);
+				}
+				else
+				{
+					++it;
+				}
+			}
+			
+		}
 		//draw circle
 		
 		//circle-circle collision
 
-		for (int i = 0; i < circles.size() - 1; i++)
+		for (size_t i = 0; i + 1 < circles.size(); i++)
 		{
-			for (int j = i+1; j < circles.size(); j++)
+			for (size_t j = i + 1; j < circles.size(); j++)
 			{
 				auto& circle1 = circles[i];
 				auto& circle2 = circles[j];
@@ -300,7 +316,8 @@ int main()
 			Debug::DrawArrow(i.pos,i.pos+(glm::normalize(i.vel)*0.1f), glm::vec3(1.0f, 1.0f, 0.0f));
 		}
 
-
+		
+		
 		//Log(glfwGetTime());
 
 		/* Swap front and back buffers */

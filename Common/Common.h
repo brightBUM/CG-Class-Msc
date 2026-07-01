@@ -28,3 +28,8 @@ namespace Debug
     void DrawCircle(glm::vec3 centre, float radius, glm::vec3 color);
     //void EndFrame();
 }
+
+namespace Collision
+{
+    bool Circle_Point(glm::vec3, float, glm::vec3);
+}

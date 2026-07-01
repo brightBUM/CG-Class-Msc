@@ -176,3 +176,11 @@ void FPSCounter(GLFWwindow* window)
         glfwSetWindowTitle(window, title.c_str());
     }
 }
+
+namespace Collision
+{
+    bool Circle_Point(glm::vec3 centre, float radius, glm::vec3 point)
+    {
+        return glm::distance(centre, point) <= radius;
+    }
+}
