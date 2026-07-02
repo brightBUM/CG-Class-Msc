@@ -9,14 +9,21 @@ uniform float radius;
 uniform float centreX;
 uniform float centreY;
 uniform vec3 objectColor;
+uniform vec3 dir;
+
 void main()
 {
-	vec4 texValue_0 = texture(texSampler_0,TexCoord);
+	vec2 uv = TexCoord;
+
+	uv.x -= dir.x*time*2.0f;
+	uv.y -= dir.y*time*2.0f;
+
+	vec4 texValue_0 = texture(texSampler_0,uv);
 	float dis = distance(TexCoord,vec2(centreX,centreY));
 	
 	if(dis<=radius)
 	{
-		FragColor = vec4(objectColor,1.0f);
+		FragColor = vec4(texValue_0.rgb,1.0f);
 	}
 	else
 	{

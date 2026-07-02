@@ -19,6 +19,7 @@ float radius = 0.5f;
 float worldX, worldY;
 std::vector<Circle> circles;
 bool flipView = true;
+bool flipDebug = false;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void SpawnCircle();
 void SpawnCircleAtPoint(glm::vec3);
@@ -76,9 +77,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		//radius -= 0.1f;
 
 	}
-	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
 	{
 		flipView = !flipView;
+	}
+	if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+	{
+		flipDebug = !flipDebug;
 	}
 }
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
@@ -173,14 +178,16 @@ int main()
 	defaultShader.use();
 	circleShader.use();
 
-	unsigned int texture_0, texture_1;
-	LoadTexture(texture_0, "Resources/Textures/cat_open.png");
-	//LoadTexture(texture_1, "Resources/Textures/cat_close.png");
-	circleShader.SetInt("texSampler_0", 0);
+	
+	//unsigned int texture_0, texture_1,texture_2;
+	GLuint textureVal[5];
+	LoadTexture(textureVal[0], "Resources/Textures/yellow_ball.png");
+	LoadTexture(textureVal[1], "Resources/Textures/blue_ball.png");
+	LoadTexture(textureVal[2], "Resources/Textures/purple_ball.png");
+	LoadTexture(textureVal[3], "Resources/Textures/black_ball.png");
+	LoadTexture(textureVal[4], "Resources/Textures/orange_ball.png");
 	//defaultShader.SetInt("texSampler_1", 1);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture_0);
+	
 
 	/*glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texture_1);*/
@@ -191,7 +198,7 @@ int main()
 	std::cout << "starting game loop -" << std::endl;
 	
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		SpawnCircle();
 	}
@@ -303,17 +310,24 @@ int main()
 			circleMatrix = glm::scale(circleMatrix, i.scale);
 			circleShader.SetMat4("translate", circleMatrix);
 
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, textureVal[i.textureIndex]);
+			circleShader.SetInt("texSampler_0", 0);
+			
 			circleShader.SetFloat("centreX", centre.x);
 			circleShader.SetFloat("centreY", centre.y);
 			circleShader.SetFloat("radius", i.radius);
 			circleShader.SetVec3("objectColor", i.objectColor);
+			circleShader.SetVec3("dir", i.vel);
 			circleShader.SetFloat("time", glfwGetTime());
 
 
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 
-			Debug::DrawArrow(i.pos,i.pos+(glm::normalize(i.vel)*0.1f), glm::vec3(1.0f, 1.0f, 0.0f));
+			if(flipDebug)
+				Debug::DrawArrow(i.pos,i.pos+(glm::normalize(i.vel)*0.1f), glm::vec3(1.0f, 1.0f, 0.0f));
 		}
 
 		

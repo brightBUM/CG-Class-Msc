@@ -12,6 +12,7 @@ public:
 	};
 	glm::vec3 objectColor;
 	float radius;
+	int textureIndex;
 	Circle(glm::vec3, glm::vec3);
 	void Move();
 	void CheckBounds();

@@ -7,7 +7,8 @@ Circle::Circle(glm::vec3 pos,glm::vec3 vel)
 	this->scale = glm::vec3(0.1f);
 	this->radius = 0.5f;
 	this->objectColor = glm::vec3(0.157f, 0.212f, 0.094f);
-	
+	this->textureIndex = Random::RandomInt(0, 4);
+	//Log("circle " << this->textureIndex);
 }
 
 void Circle::Move()
