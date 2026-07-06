@@ -12,14 +12,16 @@
 #include"Circle.h"
 #include<vector>
 #include"Common.h"
+
 float xPos, yPos;
-float paddleSpeed = 2.0f;
+float camSpeed = 2.0f;
 glm::vec2 centre(0.5f, 0.5f);
 float radius = 0.5f;
 float worldX, worldY;
 std::vector<Circle> circles;
 bool flipView = true;
 bool flipDebug = false;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void SpawnCircle();
 void SpawnCircleAtPoint(glm::vec3);
@@ -57,26 +59,7 @@ void LoadTexture(unsigned int& texture, const char* fileName)
 }
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
-	{
-		//inc
-
-		if (yPos <= 0.75)
-			yPos += 0.1f * paddleSpeed;
-
-		//radius += 0.1f;
-	}
-
-
-	else if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
-	{
-
-		//dec
-		if (yPos >= -0.75f)
-			yPos -= 0.1f * paddleSpeed;
-		//radius -= 0.1f;
-
-	}
+	
 	if (key == GLFW_KEY_1 && action == GLFW_PRESS)
 	{
 		flipView = !flipView;
@@ -92,8 +75,6 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 	//screen space to ndc
 	worldX = xpos / (double)WIDTH * 2.0f - 1.0f;
 	worldY = 1.0f - ypos / (double)HEIGHT * 2.0f;
-
-	
 }
 
 int main()
@@ -211,6 +192,37 @@ int main()
 	//game loop
 	while (!glfwWindowShouldClose(window))
 	{
+		/* Render here */
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(0.376f, 0.424f, 0.22f, 1.0f);
+
+		FPSCounter(window);
+		//logic
+		defaultShader.use();
+		defaultShader.SetFloat("time", glfwGetTime());
+
+		spawnTimer += deltaTime;
+		
+
+		//inputs4
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		{
+			yPos += deltaTime * camSpeed;
+		}
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		{
+			yPos -= deltaTime * camSpeed;
+		}
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		{
+			xPos += deltaTime * camSpeed;
+		}
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		{
+			xPos -= deltaTime * camSpeed;
+		}
+
+
 		if (flipView)
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -224,17 +236,6 @@ int main()
 
 		}
 
-		/* Render here */
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(0.376f, 0.424f, 0.22f, 1.0f);
-
-		FPSCounter(window);
-		//logic
-		defaultShader.use();
-		defaultShader.SetFloat("time", glfwGetTime());
-
-		spawnTimer += deltaTime;
-		
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
 			if (spawnTimer >= spawnInterval)
@@ -295,7 +296,13 @@ int main()
 		}
 		
 
-		glm::mat4 circleMatrix = glm::mat4(1.0f);
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::vec3 camPos = glm::vec3(xPos, yPos, 1.0f);
+		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+		glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
+		view = glm::lookAt(camPos, camPos + front, up);
+
+		glm::mat4 model = glm::mat4(1.0f);
 
 		for (auto &i : circles)
 		{
@@ -304,12 +311,12 @@ int main()
 			i.CheckBounds();
 
 			circleShader.use();
-			circleMatrix = glm::mat4(1.0f);
+			model = glm::mat4(1.0f);
 
-			circleMatrix = glm::translate(circleMatrix, i.pos);
-			circleMatrix = glm::scale(circleMatrix, i.scale);
-			circleShader.SetMat4("translate", circleMatrix);
-
+			model = glm::translate(model, i.pos);
+			model = glm::scale(model, i.scale);
+			circleShader.SetMat4("model", model);
+			circleShader.SetMat4("view", view);
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, textureVal[i.textureIndex]);
@@ -330,8 +337,6 @@ int main()
 				Debug::DrawArrow(i.pos,i.pos+(glm::normalize(i.vel)*0.1f), glm::vec3(1.0f, 1.0f, 0.0f));
 		}
 
-		
-		
 		//Log(glfwGetTime());
 
 		/* Swap front and back buffers */
