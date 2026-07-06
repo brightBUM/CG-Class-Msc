@@ -7,8 +7,8 @@
 #include"stb_image.h"
 #include"glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-#define HEIGHT 1200
-#define WIDTH 1200
+#define HEIGHT 600
+#define WIDTH 600
 #include"Circle.h"
 #include<vector>
 
@@ -68,7 +68,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		//inc
 
-		if (yPos <= 0.75)
 			yPos += 0.1f * paddleSpeed;
 
 		//radius += 0.1f;
@@ -79,7 +78,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 
 		//dec
-		if (yPos >= -0.75f)
 			yPos -= 0.1f * paddleSpeed;
 		//radius -= 0.1f;
 
@@ -215,14 +213,14 @@ int main()
 	
 	std::vector<Circle> circles;
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 1; i++)
 	{
-		for (int j = 0; j < 3; j++)
+		for (int j = 0; j < 1; j++)
 		{
 			glm::vec3 vel = glm::vec3((i % 2 == 0 ? -1.0f : 1.0f),
 									  (i % 2 == 0 ? 1.0f : -1.0f), 0.0f);
 			vel *=0.5f;
-			circles.push_back(Circle(glm::vec3(-0.5f + 0.27f * i, 0.5f + (-1.0f) * j, 0.0f), vel));
+			circles.push_back(Circle(glm::vec3(0.0f,0.0f, 0.0f), vel));
 		}
 		
 	}
@@ -263,8 +261,15 @@ int main()
 			
 		}
 		
+		glm::mat4 view = glm::mat4(1.0f);
 
-		glm::mat4 circleMatrix = glm::mat4(1.0f);
+		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+		glm::vec3 front = glm::vec3(0.0f, 0.0f,-1.0f);
+		glm::vec3 camPos = glm::vec3(0.0f, yPos,1.0f);
+
+		view = glm::lookAt(camPos, camPos + front, up);
+
+		glm::mat4 model = glm::mat4(1.0f);
 
 		for (auto &i : circles)
 		{
@@ -273,11 +278,12 @@ int main()
 			i.CheckBounds();
 
 			circleShader.use();
-			circleMatrix = glm::mat4(1.0f);
+			model = glm::mat4(1.0f);
 
-			circleMatrix = glm::translate(circleMatrix, i.pos);
-			circleMatrix = glm::scale(circleMatrix, i.scale);
-			circleShader.SetMat4("translate", circleMatrix);
+			model = glm::translate(model, i.pos);
+			model = glm::scale(model, i.scale);
+			circleShader.SetMat4("model", model);
+			circleShader.SetMat4("view", view);
 
 			circleShader.SetFloat("centreX", centre.x);
 			circleShader.SetFloat("centreY", centre.y);
@@ -289,6 +295,7 @@ int main()
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
 
+		
 
 		//Log(glfwGetTime());
 
