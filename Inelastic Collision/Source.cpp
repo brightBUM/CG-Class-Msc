@@ -7,12 +7,11 @@
 #include"stb_image.h"
 #include"glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-#define HEIGHT 1200
 #define WIDTH 1200
+#define HEIGHT 1200
 #include"Circle.h"
 #include<vector>
 #include"Common.h"
-
 float xPos, yPos;
 float camSpeed = 2.0f;
 glm::vec2 centre(0.5f, 0.5f);
@@ -22,9 +21,27 @@ std::vector<Circle> circles;
 bool flipView = true;
 bool flipDebug = false;
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void SpawnCircle();
-void SpawnCircleAtPoint(glm::vec3);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
+void SpawnCircle()
+{
+	glm::vec3 vel = glm::vec3(Random::RandomInt(-1, 1),
+		Random::RandomInt(-1, 1), 0.0f);
+	vel *= Random::RandomFloat(0.1f, 1.0f);
+	circles.push_back(Circle(glm::vec3(
+		Random::RandomFloat(-1.0f + radius, 1.0f - radius),
+		Random::RandomFloat(-1.0f + radius, 1.0f - radius), 0.0f), vel));
+}
+void SpawnCircleAtPoint(glm::vec3 pos)
+{
+
+	glm::vec3 vel = glm::vec3(Random::RandomInt(0, 10) % 2 == 0 ? -1 : 1,
+		Random::RandomInt(0, 10) % 2 == 0 ? -1 : 1, 0.0f);
+	vel *= Random::RandomFloat(0.1f, 1.0f);
+	circles.push_back(Circle(pos, vel));
+}
 void LoadTexture(unsigned int& texture, const char* fileName)
 {
 	glGenTextures(1, &texture);
@@ -33,7 +50,7 @@ void LoadTexture(unsigned int& texture, const char* fileName)
 	int width, height, nrChannels;
 
 	unsigned char* data = stbi_load(fileName, &width, &height, &nrChannels, 0);
-	Log(nrChannels);
+	Log(fileName<<" - channels : " << nrChannels);
 	if (data)
 	{
 		switch (nrChannels)
@@ -85,6 +102,10 @@ int main()
 	glfwInit();
 	GLFWwindow* window;
 	window = glfwCreateWindow(WIDTH, HEIGHT, "CG_Class", NULL, NULL);
+
+	//dock
+	WindowUtils::DockConsoleAndWindow(window, WIDTH, HEIGHT);
+		
 	//window version and profile
 	glfwWindowHint(GLFW_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_VERSION_MINOR, 6);
@@ -204,7 +225,7 @@ int main()
 		spawnTimer += deltaTime;
 		
 
-		//inputs4
+		//inputs
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
 			yPos += deltaTime * camSpeed;
@@ -286,7 +307,8 @@ int main()
 					float overLap = radiusSum - distance;
 					circle1.pos -= normal * (overLap * 0.5f);
 					circle2.pos += normal * (overLap * 0.5f);
-					//Log(circle1.vel.x);
+					Log("circle 1 vel : "<<circle1.vel.x<<" , " << circle1.vel.y);
+					Log("circle 2 vel : "<<circle2.vel.x<<" , " << circle2.vel.y);
 					circle1.vel = -circle1.vel;
 					//Log(circle1.vel.x);
 					circle2.vel = -circle2.vel;
@@ -295,6 +317,8 @@ int main()
 			
 		}
 		
+		//draw grids
+
 
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::vec3 camPos = glm::vec3(xPos, yPos, 1.0f);
@@ -355,24 +379,5 @@ int main()
 
 #pragma endregion
 }
-void SpawnCircle()
-{
-	glm::vec3 vel = glm::vec3(Random::RandomInt(-1, 1),
-		Random::RandomInt(-1, 1), 0.0f);
-	vel *= Random::RandomFloat(0.1f, 1.0f);
-	circles.push_back(Circle(glm::vec3(
-		Random::RandomFloat(-1.0f + radius, 1.0f - radius),
-		Random::RandomFloat(-1.0f + radius, 1.0f - radius), 0.0f), vel));
-}
-void SpawnCircleAtPoint(glm::vec3 pos)
-{
 
-	glm::vec3 vel = glm::vec3(Random::RandomInt(0,10)%2==0?-1:1,
-						      Random::RandomInt(0, 10) % 2 == 0 ? -1 : 1, 0.0f);
-	vel *= Random::RandomFloat(0.1f, 1.0f);
-	circles.push_back(Circle(pos, vel));
-}
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
-}
+

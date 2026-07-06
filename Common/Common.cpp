@@ -32,15 +32,14 @@ namespace Debug
             << std::filesystem::current_path() << std::endl;
 
 
-
-        if (std::filesystem::exists(vertexPath))
+       /* if (std::filesystem::exists(vertexPath))
         {
             std::cout << "Vertex shader found\n";
         }
         else
         {
             std::cout << "Vertex shader NOT found\n";
-        }
+        }*/
         debugShader = new Shader(vertexPath.c_str(),fragmentPath.c_str());
 
         glGenVertexArrays(1, &VAO);
@@ -184,3 +183,24 @@ namespace Collision
         return glm::distance(centre, point) <= radius;
     }
 }
+
+namespace WindowUtils
+{
+    void DockConsoleAndWindow(GLFWwindow* window, int windowWidth, int windowHeight)
+    {
+        //console and window docking
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+        int screenWidth = mode->width;
+        int screenHeight = mode->height;
+
+        //glfw window
+        glfwSetWindowPos(window, windowWidth / 2, 50);
+
+        //console
+        HWND console = GetConsoleWindow();
+        MoveWindow(console, windowWidth / 2, 50 + windowHeight, windowWidth, screenHeight - windowHeight - 125, TRUE);
+    }
+}
+

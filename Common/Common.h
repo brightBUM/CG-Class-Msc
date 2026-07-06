@@ -1,6 +1,7 @@
 #include"Shader.h"
 #include"GLFW/glfw3.h"
 #include<string>
+#include<Windows.h>
 
 namespace Random
 {
@@ -32,4 +33,9 @@ namespace Debug
 namespace Collision
 {
     bool Circle_Point(glm::vec3, float, glm::vec3);
+}
+
+namespace WindowUtils
+{
+    void DockConsoleAndWindow(GLFWwindow* window,int windowWidth,int windowHeight);
 }
