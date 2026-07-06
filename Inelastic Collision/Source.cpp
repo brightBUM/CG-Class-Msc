@@ -261,6 +261,7 @@ int main()
 			
 		}
 		
+		//view matrix
 		glm::mat4 view = glm::mat4(1.0f);
 
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -295,7 +296,26 @@ int main()
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
 
-		
+		///draw square
+		defaultShader.use();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model,glm::vec3(0.5f, 0.0f, 0.0f));
+		model = glm::scale(model,glm::vec3(0.5));
+		defaultShader.SetMat4("model", model);
+		defaultShader.SetMat4("view", view);
+		defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		//draw triangle
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-0.5f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.5));
+		defaultShader.SetMat4("model", model);
+		defaultShader.SetMat4("view", view);
+		defaultShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		//Log(glfwGetTime());
 
