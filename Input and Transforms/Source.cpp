@@ -11,7 +11,7 @@
 #define WIDTH 800
 #define Log(x) std::cout<<x<<std::endl;
 
-float xPos, yPos;
+float xPos, zPos;
 float paddleSpeed =2.0f;
 glm::vec2 centre(0.5f, 0.5f);
 float radius = 0.5f;
@@ -56,8 +56,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		//inc
 
-		if (yPos <= 0.75)
-			yPos += 0.1f*paddleSpeed;
+		if (zPos <= 0.75)
+			zPos += 0.1f*paddleSpeed;
 
 		
 	}
@@ -67,8 +67,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 
 		//dec
-		if (yPos >= -0.75f)
-			yPos -= 0.1f*paddleSpeed;
+		if (zPos >= -0.75f)
+			zPos -= 0.1f*paddleSpeed;
 
 	}
 }
@@ -189,8 +189,8 @@ int main()
 		/*glm::vec4 vectorA = glm::vec4(5.0f, 3.0f, 0.0f, 1.0f);*/
 		//draw paddle
 		glm::mat4 paddleMatrix = glm::mat4(1.0f);
-		Log(yPos);
-		paddleMatrix = glm::translate(paddleMatrix, glm::vec3(xPos,yPos, 0.0f));
+		Log(zPos);
+		paddleMatrix = glm::translate(paddleMatrix, glm::vec3(xPos,zPos, 0.0f));
 		paddleMatrix = glm::scale(paddleMatrix, glm::vec3(0.1f, 0.5f, 0.0f));
 
 		defaultShader.SetMat4("translate", paddleMatrix);

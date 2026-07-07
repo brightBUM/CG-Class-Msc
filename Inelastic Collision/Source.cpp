@@ -12,7 +12,7 @@
 #include"Circle.h"
 #include<vector>
 
-float xPos, yPos;
+float xPos, zPos = 2.0f;
 float paddleSpeed = 2.0f;
 glm::vec2 centre(0.5f, 0.5f);
 float radius = 0.5f;
@@ -68,7 +68,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		//inc
 
-			yPos += 0.1f * paddleSpeed;
+			zPos -= 0.1f * paddleSpeed;
 
 		//radius += 0.1f;
 	}
@@ -78,7 +78,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 
 		//dec
-			yPos -= 0.1f * paddleSpeed;
+			zPos += 0.1f * paddleSpeed;
 		//radius -= 0.1f;
 
 	}
@@ -266,9 +266,14 @@ int main()
 
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::vec3 front = glm::vec3(0.0f, 0.0f,-1.0f);
-		glm::vec3 camPos = glm::vec3(0.0f, yPos,1.0f);
+		glm::vec3 camPos = glm::vec3(0.0f,0.0f ,zPos);
 
 		view = glm::lookAt(camPos, camPos + front, up);
+
+		//projection matrix
+		glm::mat4 proj = glm::mat4(1.0f);
+		//fov,aspect ratio (W/H),near plane , far plane
+		proj = glm::perspective(45.0f, (float)WIDTH / HEIGHT, 0.1f, 100.0f);
 
 		glm::mat4 model = glm::mat4(1.0f);
 
@@ -285,6 +290,7 @@ int main()
 			model = glm::scale(model, i.scale);
 			circleShader.SetMat4("model", model);
 			circleShader.SetMat4("view", view);
+			circleShader.SetMat4("proj", proj);
 
 			circleShader.SetFloat("centreX", centre.x);
 			circleShader.SetFloat("centreY", centre.y);
@@ -303,6 +309,8 @@ int main()
 		model = glm::scale(model,glm::vec3(0.5));
 		defaultShader.SetMat4("model", model);
 		defaultShader.SetMat4("view", view);
+		defaultShader.SetMat4("proj", proj);
+
 		defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -311,8 +319,10 @@ int main()
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(-0.5f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.5));
+		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f,1.0f,0.0f));
 		defaultShader.SetMat4("model", model);
 		defaultShader.SetMat4("view", view);
+		defaultShader.SetMat4("proj", proj);
 		defaultShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
