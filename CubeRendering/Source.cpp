@@ -195,7 +195,6 @@ int main()
 	};
 
 
-
 	//cube - pos,uv
 	float cubeVertices2[] = {
 		// ===== FRONT FACE =====
@@ -257,6 +256,7 @@ int main()
 	};
 
 	//VBO - vertex buffer object
+	//EBO - element buffer object
 	//VAO - vertex array object
 	unsigned int VBO, VAO,EBO;
 	glGenBuffers(1, &VBO);
@@ -266,10 +266,10 @@ int main()
 	//Binding the buffer - selecting current buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	//assign vertex data to buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices2), cubeVertices2, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices2), cubeIndices2, GL_STATIC_DRAW);
 
 #pragma endregion
 
@@ -280,29 +280,30 @@ int main()
 	//2nd - para - size of the component;
 	//5th - para - total size of the vertex/point
 	//6th - para - offset within the vertex size
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	/*glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);*/
 
 	Shader defaultShader("Resources/Shaders/default.vert",
 		"Resources/Shaders/default.frag");
-	Shader circleShader("Resources/Shaders/default.vert",
-		"Resources/Shaders/circle.frag");
+	/*Shader circleShader("Resources/Shaders/default.vert",
+		"Resources/Shaders/circle.frag");*/
 
-	defaultShader.use();
-	circleShader.use();
+	//circleShader.use();
 
 	unsigned int texture_0, texture_1;
-	LoadTexture(texture_0, "Resources/Textures/yellow_ball.png");
+	LoadTexture(texture_0, "Resources/Textures/ball.png");
 	//LoadTexture(texture_1, "Resources/Textures/cat_close.png");
 
-	circleShader.SetInt("texSampler_0", 0);
-	//defaultShader.SetInt("texSampler_1", 1);
+
+	defaultShader.use();
+	//circleShader.SetInt("texSampler_0", 0);
+	defaultShader.SetInt("texSampler_0", 0);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_0);
@@ -311,11 +312,14 @@ int main()
 	glBindTexture(GL_TEXTURE_2D, texture_1);*/
 #pragma endregion
 
-
+	//enable blending
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	/*glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);*/
+	//enable depth 
+	glEnable(GL_DEPTH_TEST);
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	std::cout << "starting game loop -" << std::endl;
 
@@ -326,7 +330,7 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		/* Render here */
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.1f, 0.5f, 0.4f, 1.0f);
 
 		//logic
@@ -357,13 +361,16 @@ int main()
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.5));
+		model = glm::rotate(model,(float)glfwGetTime(), glm::vec3(1.0f,1.0f,0.0f));
 		defaultShader.SetMat4("model", model);
 		defaultShader.SetMat4("view", view);
 		defaultShader.SetMat4("proj", proj);
 
-		defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
+		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 		
 
 		//Log(glfwGetTime());
