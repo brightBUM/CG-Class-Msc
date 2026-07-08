@@ -144,63 +144,30 @@ int main()
 	float vertices[] =
 	{
 		//pos                //col			   //Tex Coords
-		-0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f, 0.0f,0.0f, // point -1
-		 0.5f, -0.5f, 0.0f,	 0.0f, 1.0f, 0.0f, 1.0f,0.0f, // point -2
-		-0.5f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 0.0f,1.0f, // point -3
-
-		-0.5f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 0.0f,1.0f, // point -1
-		 0.5f, -0.5f, 0.0f,	 0.0f, 1.0f, 0.0f, 1.0f,0.0f, // point -2
-		 0.5f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 1.0f,1.0f  // point -3
+		 0.5f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 1.0f,1.0f,  // point -0
+		 0.5f, -0.5f, 0.0f,	 0.0f, 1.0f, 0.0f, 1.0f,0.0f,  // point -1
+		-0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f, 0.0f,0.0f,  // point -2
+		-0.5f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 0.0f,1.0f,  // point -3
 	};
 
-	float cubeVertices[] = {
-		// ===== FRONT FACE (normal: 0, 0, 1) =====
-	//    position              normal           uv
-	-0.5f, -0.5f,  0.5f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,    0.0f, 0.0f, 1.0f,    1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,    0.0f, 0.0f, 1.0f,    1.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,    0.0f, 0.0f, 1.0f,    0.0f, 1.0f,
-
-	// ===== BACK FACE (normal: 0, 0, -1) =====
-	-0.5f, -0.5f, -0.5f,    0.0f, 0.0f, -1.0f,   1.0f, 0.0f,
-	 0.5f, -0.5f, -0.5f,    0.0f, 0.0f, -1.0f,   0.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,    0.0f, 0.0f, -1.0f,   0.0f, 1.0f,
-	-0.5f,  0.5f, -0.5f,    0.0f, 0.0f, -1.0f,   1.0f, 1.0f,
-
-	// ===== LEFT FACE (normal: -1, 0, 0) =====
-	-0.5f, -0.5f, -0.5f,    -1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-	-0.5f, -0.5f,  0.5f,    -1.0f, 0.0f, 0.0f,   1.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,    -1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
-	-0.5f,  0.5f, -0.5f,    -1.0f, 0.0f, 0.0f,   0.0f, 1.0f,
-
-	// ===== RIGHT FACE (normal: 1, 0, 0) =====
-	 0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,    1.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,    1.0f, 0.0f, 0.0f,    0.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,    0.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,    1.0f, 0.0f, 0.0f,    1.0f, 1.0f,
-
-	 // ===== TOP FACE (normal: 0, 1, 0) =====
-	 -0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 0.0f,    0.0f, 1.0f,
-	  0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 0.0f,    1.0f, 1.0f,
-	  0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,    1.0f, 0.0f,
-	 -0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,    0.0f, 0.0f,
-
-	 // ===== BOTTOM FACE (normal: 0, -1, 0) =====
-	 -0.5f, -0.5f,  0.5f,    0.0f, -1.0f, 0.0f,   0.0f, 0.0f,
-	  0.5f, -0.5f,  0.5f,    0.0f, -1.0f, 0.0f,   1.0f, 0.0f,
-	  0.5f, -0.5f, -0.5f,    0.0f, -1.0f, 0.0f,   1.0f, 1.0f,
-	 -0.5f, -0.5f, -0.5f,    0.0f, -1.0f, 0.0f,   0.0f, 1.0f
+	int indices[] = {
+		0,1,3,
+		1,2,3
 	};
 	//VBO - vertex buffer object
 	//VAO - vertex array object
-	unsigned int VBO, VAO;
+	unsigned int VBO, VAO,EBO;
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	//Binding the buffer - selecting current buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	//assign vertex data to buffer
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 #pragma endregion
 
@@ -338,7 +305,7 @@ int main()
 			circleShader.SetFloat("time", glfwGetTime());
 			circleShader.SetVec3("dir", i.vel);
 			glBindVertexArray(VAO);
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_INT,0);
 		}
 
 		///draw square
@@ -352,7 +319,8 @@ int main()
 
 		defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
 		//draw triangle
 		model = glm::mat4(1.0f);
@@ -364,7 +332,8 @@ int main()
 		defaultShader.SetMat4("proj", proj);
 		defaultShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
 		//Log(glfwGetTime());
 
