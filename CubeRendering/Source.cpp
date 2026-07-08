@@ -154,6 +154,108 @@ int main()
 		0,1,3,
 		1,2,3
 	};
+
+	//cube - pos , col
+	float cubeVertices[] = {
+		// position           // color
+		-0.5f,-0.5f,-0.5f,    1.0f,0.0f,0.0f,   // 0
+		 0.5f,-0.5f,-0.5f,    0.0f,1.0f,0.0f,   // 1
+		 0.5f, 0.5f,-0.5f,    0.0f,0.0f,1.0f,   // 2
+		-0.5f, 0.5f,-0.5f,    1.0f,1.0f,0.0f,   // 3
+
+		-0.5f,-0.5f, 0.5f,    1.0f,0.0f,1.0f,   // 4
+		 0.5f,-0.5f, 0.5f,    0.0f,1.0f,1.0f,   // 5
+		 0.5f, 0.5f, 0.5f,    1.0f,1.0f,1.0f,   // 6
+		-0.5f, 0.5f, 0.5f,    0.3f,0.3f,0.3f    // 7
+	};
+	unsigned int cubeIndices[] = {
+		// Front face
+		0, 1, 2,
+		2, 3, 0,
+
+		// Right face
+		1, 5, 6,
+		6, 2, 1,
+
+		// Back face
+		5, 4, 7,
+		7, 6, 5,
+
+		// Left face
+		4, 0, 3,
+		3, 7, 4,
+
+		// Top face
+		3, 2, 6,
+		6, 7, 3,
+
+		// Bottom face
+		4, 5, 1,
+		1, 0, 4
+	};
+
+
+
+	//cube - pos,uv
+	float cubeVertices2[] = {
+		// ===== FRONT FACE =====
+		//    position           uv
+		-0.5f, -0.5f,  0.5f,     0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,     1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,     1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,     0.0f, 1.0f,
+
+		// ===== BACK FACE =====
+		-0.5f, -0.5f, -0.5f,     1.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,     0.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,     0.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,     1.0f, 1.0f,
+
+		// ===== LEFT FACE =====
+		-0.5f, -0.5f, -0.5f,     0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,     1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,     1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,     0.0f, 1.0f,
+
+		// ===== RIGHT FACE =====
+		 0.5f, -0.5f, -0.5f,     1.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,     0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,     0.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,     1.0f, 1.0f,
+
+		 // ===== TOP FACE =====
+		 -0.5f,  0.5f,  0.5f,     0.0f, 1.0f,
+		  0.5f,  0.5f,  0.5f,     1.0f, 1.0f,
+		  0.5f,  0.5f, -0.5f,     1.0f, 0.0f,
+		 -0.5f,  0.5f, -0.5f,     0.0f, 0.0f,
+
+		 // ===== BOTTOM FACE =====
+		 -0.5f, -0.5f,  0.5f,     0.0f, 0.0f,
+		  0.5f, -0.5f,  0.5f,     1.0f, 0.0f,
+		  0.5f, -0.5f, -0.5f,     1.0f, 1.0f,
+		 -0.5f, -0.5f, -0.5f,     0.0f, 1.0f
+	};
+
+	unsigned int cubeIndices2[] = {
+		// FRONT
+		0, 1, 2,  2, 3, 0,
+
+		// BACK
+		4, 5, 6,  6, 7, 4,
+
+		// LEFT
+		8, 9, 10, 10, 11, 8,
+
+		// RIGHT
+		12, 13, 14, 14, 15, 12,
+
+		// TOP
+		16, 17, 18, 18, 19, 16,
+
+		// BOTTOM
+		20, 21, 22, 22, 23, 20
+	};
+
 	//VBO - vertex buffer object
 	//VAO - vertex array object
 	unsigned int VBO, VAO,EBO;
@@ -217,19 +319,7 @@ int main()
 
 	std::cout << "starting game loop -" << std::endl;
 
-	std::vector<Circle> circles;
-
-	for (int i = 0; i < 1; i++)
-	{
-		for (int j = 0; j < 1; j++)
-		{
-			glm::vec3 vel = glm::vec3((i % 2 == 0 ? -1.0f : 1.0f),
-				(i % 2 == 0 ? 1.0f : -1.0f), 0.0f);
-			vel *= 0.5f;
-			circles.push_back(Circle(glm::vec3(0.0f, 0.0f, 0.0f), vel));
-		}
-
-	}
+	
 	//circles.push_back(Circle(glm::vec3(0.0f), glm::vec3(0.1f,0.1f,0.0f)*5.0f));
 #pragma region RenderLoop
 	//game loop
@@ -244,28 +334,6 @@ int main()
 		defaultShader.SetFloat("time", glfwGetTime());
 
 		FPSCounter(window);
-		//draw circle
-
-		//circle-circle collision
-
-		for (int i = 0; i < circles.size() - 1; i++)
-		{
-			for (int j = i + 1; j < circles.size(); j++)
-			{
-				auto& circle1 = circles[i];
-				auto& circle2 = circles[j];
-				float distance = glm::distance(circle1.pos, circle2.pos);
-
-				if (distance < (circle1.radius * circle1.scale.x) + (circle2.radius * circle2.scale.x))
-				{
-					//Log(circle1.vel.x);
-					circle1.vel = -circle1.vel;
-					//Log(circle1.vel.x);
-					circle2.vel = -circle2.vel;
-				}
-			}
-
-		}
 
 		//view matrix
 		glm::mat4 view = glm::mat4(1.0f);
@@ -283,32 +351,8 @@ int main()
 
 		glm::mat4 model = glm::mat4(1.0f);
 
-		for (auto& i : circles)
-		{
-			i.Move(deltaTime);
-			//circle-window collision
-			i.CheckBounds();
-
-			circleShader.use();
-			model = glm::mat4(1.0f);
-
-			model = glm::translate(model, i.pos);
-			model = glm::scale(model, i.scale);
-			circleShader.SetMat4("model", model);
-			circleShader.SetMat4("view", view);
-			circleShader.SetMat4("proj", proj);
-
-			circleShader.SetFloat("centreX", centre.x);
-			circleShader.SetFloat("centreY", centre.y);
-			circleShader.SetFloat("radius", i.radius);
-			circleShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
-			circleShader.SetFloat("time", glfwGetTime());
-			circleShader.SetVec3("dir", i.vel);
-			glBindVertexArray(VAO);
-			glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_INT,0);
-		}
-
-		///draw square
+		
+		///draw Cube
 		defaultShader.use();
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
@@ -320,20 +364,7 @@ int main()
 		defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-
-		//draw triangle
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-0.5f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.5));
-		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
-		defaultShader.SetMat4("model", model);
-		defaultShader.SetMat4("view", view);
-		defaultShader.SetMat4("proj", proj);
-		defaultShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+		
 
 		//Log(glfwGetTime());
 
