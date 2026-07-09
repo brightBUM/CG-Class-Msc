@@ -9,8 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #define HEIGHT 600
 #define WIDTH 600
-#include"Circle.h"
 #include<vector>
+#include"Camera.h"
 
 float xPos, zPos = 2.0f;
 float paddleSpeed = 2.0f;
@@ -26,9 +26,11 @@ double fpsTimer = 0.0;
 double fpsUpdateInterval = 0.5; // half a second
 int frames = 0;
 
-
+double worldX, worldY;
+double prevX, prevY;
 bool wHeld;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void CameraInput(GLFWwindow* window, Camera& camera);
 void LoadTexture(unsigned int& texture, const char* fileName)
 {
 	glGenTextures(1, &texture);
@@ -62,9 +64,19 @@ void LoadTexture(unsigned int& texture, const char* fileName)
 	}
 	stbi_image_free(data);
 }
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	//Log("cursor callback");
+	//screen space to ndc
+	worldX = xpos ;
+	worldY = ypos ;
+
+	/*Log(worldX);
+	Log(worldY);*/
+}
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_RELEASE))
 	{
 		//inc
 
@@ -127,6 +139,8 @@ int main()
 	//callback functions
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetKeyCallback(window, key_callback);
+	glfwSetCursorPosCallback(window, cursor_position_callback);
+	
 	//glfwSwapInterval(0);
 	//glad loader
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -323,8 +337,8 @@ int main()
 
 	std::cout << "starting game loop -" << std::endl;
 
+	Camera camera(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f);
 	
-	//circles.push_back(Circle(glm::vec3(0.0f), glm::vec3(0.1f,0.1f,0.0f)*5.0f));
 #pragma region RenderLoop
 	//game loop
 	while (!glfwWindowShouldClose(window))
@@ -339,6 +353,10 @@ int main()
 
 		FPSCounter(window);
 
+		
+		CameraInput(window, camera);
+
+
 		//view matrix
 		glm::mat4 view = glm::mat4(1.0f);
 
@@ -346,7 +364,9 @@ int main()
 		glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
 		glm::vec3 camPos = glm::vec3(0.0f, 0.0f, zPos);
 
-		view = glm::lookAt(camPos, camPos + front, up);
+		view = camera.GetViewMatrix();
+		
+		//view = glm::rotate(view,(float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		//projection matrix
 		glm::mat4 proj = glm::mat4(1.0f);
@@ -355,22 +375,22 @@ int main()
 
 		glm::mat4 model = glm::mat4(1.0f);
 
-		
-		///draw Cube
-		defaultShader.use();
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.5));
-		model = glm::rotate(model,(float)glfwGetTime(), glm::vec3(1.0f,1.0f,0.0f));
-		defaultShader.SetMat4("model", model);
-		defaultShader.SetMat4("view", view);
-		defaultShader.SetMat4("proj", proj);
+		for (int i = 0; i < 5; i++)
+		{
+			///draw Cube
+			defaultShader.use();
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(-0.5f+(1.0f*i), 0.0f, 0.0f));
+			model = glm::scale(model, glm::vec3(0.5));
+			//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
+			defaultShader.SetMat4("model", model);
+			defaultShader.SetMat4("view", view);
+			defaultShader.SetMat4("proj", proj);
 
-		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
-		glBindVertexArray(VAO);
-
-		
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+			//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
+			glBindVertexArray(VAO);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		}
 		
 
 		//Log(glfwGetTime());
@@ -389,6 +409,45 @@ int main()
 	return 0;
 #pragma endregion
 
+}
+void CameraInput(GLFWwindow* window, Camera& camera)
+{
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
+	{
+		Log("rightmouse press");
+	}
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		camera.ProcessKeyboard(FORWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		camera.ProcessKeyboard(BACKWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		camera.ProcessKeyboard(LEFT, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		camera.ProcessKeyboard(RIGHT, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		camera.ProcessKeyboard(DOWN, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	{
+		camera.ProcessKeyboard(UP, deltaTime);
+	}
+
+
+	double mouseDeltaX = worldX - prevX;
+	double mouseDeltaY = prevY - worldY;
+	prevX = worldX;
+	prevY = worldY;
+
+	camera.ProcessMouseMovement(mouseDeltaX, mouseDeltaY);
 }
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {

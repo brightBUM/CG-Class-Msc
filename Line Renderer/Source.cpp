@@ -53,7 +53,7 @@ int main()
 	//mouse input
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
-
+	
 
 	//glad loader
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
