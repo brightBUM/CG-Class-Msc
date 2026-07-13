@@ -1,0 +1,13 @@
+#version 460 core
+out vec4 FragColor;
+//in vec3 Color;
+in vec2 TexCoord;
+
+uniform sampler2D texSampler_0;
+//uniform sampler2D texSampler_1;
+uniform float time;
+uniform vec3 objectColor ;
+void main()
+{
+	FragColor = vec4(1.0f);
+} 

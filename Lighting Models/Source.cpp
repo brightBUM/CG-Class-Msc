@@ -13,7 +13,7 @@
 #include"Camera.h"
 #include"common.h"
 
-float xPos, zPos = 2.0f;
+float xPos, zPos = 0.0f;
 float paddleSpeed = 2.0f;
 glm::vec2 centre(0.5f, 0.5f);
 float radius = 0.5f;
@@ -32,6 +32,8 @@ double prevX, prevY;
 bool wHeld;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void CameraInput(GLFWwindow* window, Camera& camera);
+void LightInput(GLFWwindow* window);
+
 void LoadTexture(unsigned int& texture, const char* fileName)
 {
 	glGenTextures(1, &texture);
@@ -77,24 +79,24 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 }
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_RELEASE))
-	{
-		//inc
+	//if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_RELEASE))
+	//{
+	//	//inc
 
-		zPos -= 0.1f * paddleSpeed;
+	//	zPos -= 0.1f * paddleSpeed;
 
-		//radius += 0.1f;
-	}
+	//	//radius += 0.1f;
+	//}
 
 
-	else if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
-	{
+	//else if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	//{
 
-		//dec
-		zPos += 0.1f * paddleSpeed;
-		//radius -= 0.1f;
+	//	//dec
+	//	zPos += 0.1f * paddleSpeed;
+	//	//radius -= 0.1f;
 
-	}
+	//}
 }
 void FPSCounter(GLFWwindow* window)
 {
@@ -270,6 +272,8 @@ int main()
 		20, 21, 22, 22, 23, 20
 	};
 
+
+
 	//VBO - vertex buffer object
 	//EBO - element buffer object
 	//VAO - vertex array object
@@ -286,15 +290,7 @@ int main()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices2), cubeIndices2, GL_STATIC_DRAW);
 
-#pragma endregion
 
-#pragma region Shaders
-
-	//linking attributes
-	//1st - para - layout location(in vertex shader)
-	//2nd - para - size of the component;
-	//5th - para - total size of the vertex/point
-	//6th - para - offset within the vertex size
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
@@ -309,7 +305,7 @@ int main()
 	/*Shader circleShader("Resources/Shaders/default.vert",
 		"Resources/Shaders/circle.frag");*/
 
-	//circleShader.use();
+		//circleShader.use();
 
 	unsigned int texture_0, texture_1;
 	LoadTexture(texture_0, "Resources/Textures/ball.png");
@@ -325,6 +321,38 @@ int main()
 
 	/*glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texture_1);*/
+
+
+	//lighting params
+	/*unsigned int lightVAO,lightVBO;
+	
+	glGenVertexArrays(1, &lightVAO);
+	glGenBuffers(1, &lightVBO);
+
+	glBindVertexArray(lightVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);*/
+
+	Shader lightShader("Resources/Shaders/light.vert",
+		"Resources/Shaders/light.frag");
+
+	lightShader.use();
+
+	
+#pragma endregion
+
+#pragma region Shaders
+
+	
+	
+
+	
+	
 #pragma endregion
 
 	//enable blending
@@ -349,21 +377,19 @@ int main()
 		glClearColor(0.1f, 0.5f, 0.4f, 1.0f);
 
 		//logic
-		defaultShader.use();
-		defaultShader.SetFloat("time", glfwGetTime());
 
 		FPSCounter(window);
 
 		
 		CameraInput(window, camera);
-
+		LightInput(window);
 
 		//view matrix
 		glm::mat4 view = glm::mat4(1.0f);
 
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 		glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
-		glm::vec3 camPos = glm::vec3(0.0f, 0.0f, zPos);
+		glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 1.0f);
 
 		view = camera.GetViewMatrix();
 		
@@ -387,13 +413,26 @@ int main()
 			defaultShader.SetMat4("model", model);
 			defaultShader.SetMat4("view", view);
 			defaultShader.SetMat4("proj", proj);
+			defaultShader.SetFloat("time", glfwGetTime());
 
 			//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
 			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 		}
 		
+		//lighting placeholder - cube
+		glm::vec3 lightPos = glm::vec3(xPos, 0.0f, zPos);
+		lightShader.use();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, lightPos);
+		model = glm::scale(model, glm::vec3(0.1f));
+		lightShader.SetMat4("model", model);
+		lightShader.SetMat4("view", view);
+		lightShader.SetMat4("proj", proj);
 
+		glBindVertexArray(VAO);
+
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 		//Log(glfwGetTime());
 
 		/* Swap front and back buffers */
@@ -451,6 +490,25 @@ void CameraInput(GLFWwindow* window, Camera& camera)
 	camera.ProcessMouseMovement(mouseDeltaX, mouseDeltaY);
 
 	//mouse scroll
+}
+void LightInput(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		zPos += paddleSpeed * deltaTime;
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		zPos -= paddleSpeed * deltaTime;
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		xPos += paddleSpeed * deltaTime;
+	}
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		xPos -= paddleSpeed * deltaTime;
+	}
 }
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
