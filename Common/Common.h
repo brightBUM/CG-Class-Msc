@@ -17,19 +17,24 @@ extern double fpsUpdateInterval; // half a second
 extern int frames;
 
 void FPSCounter(GLFWwindow* window);
+void SetProjectAssetPath(const char* path);
 
 namespace Debug
 {
     void Init();
     void ShutDown();
-    void SetAssetPath(const char* path);
     //void BeginFrame();
     void DrawLine(glm::vec3, glm::vec3, glm::vec3);
     void DrawArrow(glm::vec3, glm::vec3, glm::vec3);
     void DrawCircle(glm::vec3 centre, float radius, glm::vec3 color);
     //void EndFrame();
 }
+namespace Grid
+{
+    void InitGrid(int gridSize);
+    void DrawGrid();
 
+}
 namespace Collision
 {
     bool Circle_Point(glm::vec3, float, glm::vec3);

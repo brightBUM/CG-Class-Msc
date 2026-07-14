@@ -204,7 +204,7 @@ int main()
 	{
 		SpawnCircle();
 	}
-	Debug::SetAssetPath("../Common/Resources/");
+	SetProjectAssetPath("../Common/Resources/");
 	Debug::Init();
 
 	float spawnTimer = 0.0f;

@@ -9,17 +9,17 @@
 #include<filesystem>
 const float Rad2Deg = 57.2958f;
 const float Deg2Rad = 3.14159265f / 180.0f;
+const char* assetPath = nullptr;
+void SetProjectAssetPath(const char* path)
+{
+    assetPath = path;
+}
+
 namespace Debug
 {
     unsigned int VBO, VAO;
-    const char* assetPath = nullptr;
     Shader* debugShader = nullptr;
-    void SetAssetPath(const char* path)
-    {
-        
-
-        assetPath = path;
-    }
+   
 
     void Init()
     {
@@ -122,6 +122,62 @@ namespace
     std::mt19937 rng(rd());
 }
 
+namespace Grid
+{
+    Shader* lineShader = nullptr;
+
+    unsigned int lineVAO, lineVBO;
+    std::vector<glm::vec3> lineVertices;
+
+    void InitGrid(int gridSize)
+    {
+        std::string vertexPath = std::string(assetPath) + "Shaders/line.vert";
+        std::string fragmentPath = std::string(assetPath) + "Shaders/line.frag";
+
+        std::cout << "Vertex Path: "
+            << vertexPath << std::endl;
+        std::cout << "Current Path: "
+            << std::filesystem::current_path() << std::endl;
+
+        lineShader = new Shader(vertexPath.c_str(), fragmentPath.c_str());
+
+        for (int i = -gridSize; i < gridSize; i++)  
+        {
+            //x lines
+            lineVertices.push_back(glm::vec3(-gridSize, 0.0f, i));
+            lineVertices.push_back(glm::vec3(gridSize, 0.0f, i));
+
+
+            //z lines
+            lineVertices.push_back(glm::vec3(i, 0, -gridSize));
+            lineVertices.push_back(glm::vec3(i, 0, gridSize));
+        }
+
+
+        lineShader->use();
+
+        glGenVertexArrays(1, &lineVAO);
+        glBindVertexArray(lineVAO);
+
+        glGenBuffers(1, &lineVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+        glBufferData(GL_ARRAY_BUFFER, lineVertices.size() * sizeof(glm::vec3), lineVertices.data(), GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+    }
+    void DrawGrid()
+    {
+        glLineWidth(1.0f);
+        glBindVertexArray(lineVAO);
+        glm::mat4 model = glm::mat4(1.0f);
+        lineShader->SetVec3("objectColor", glm::vec3(0.5f));
+        model = glm::translate(model, glm::vec3(0.0f));
+        lineShader->SetMat4("model", model);
+        glDrawArrays(GL_LINES, 0, lineVertices.size());
+    }
+}
+
 namespace Random
 {
     int RandomInt(int min, int max)
@@ -140,7 +196,6 @@ void fnCommon()
 {
 	
 }
-
 
 
 double deltaTime = 0.0;
