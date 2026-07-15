@@ -347,7 +347,7 @@ int main()
 		//circleShader.use();
 
 	unsigned int texture_0, texture_1;
-	LoadTexture(texture_0, "Resources/Textures/ball.png");
+	LoadTexture(texture_0, "Resources/Textures/yellow_ball.png");
 	//LoadTexture(texture_1, "Resources/Textures/cat_close.png");
 
 
@@ -456,7 +456,9 @@ int main()
 			defaultShader.SetMat4("view", view);
 			defaultShader.SetMat4("proj", proj);
 			defaultShader.SetFloat("time", glfwGetTime());
+			defaultShader.SetInt("specularStrength", 64);
 			defaultShader.SetVec3("lightPos", lightPos);
+			defaultShader.SetVec3("camPos", camera.Position);
 			defaultShader.SetFloat("ambient", 0.2f);
 			//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
 			glBindVertexArray(VAO);
