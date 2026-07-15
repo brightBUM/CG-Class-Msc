@@ -131,6 +131,7 @@
     <None Include="Resources\Shaders\default.vert" />
     <None Include="Resources\Shaders\light.frag" />
     <None Include="Resources\Shaders\light.vert" />
+    <None Include="Resources\Shaders\line.vert" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.vcxproj">

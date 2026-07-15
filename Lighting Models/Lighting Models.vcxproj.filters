@@ -32,5 +32,8 @@
     <None Include="Resources\Shaders\light.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Resources\Shaders\line.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

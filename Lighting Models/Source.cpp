@@ -12,7 +12,7 @@
 #include<vector>
 #include"Camera.h"
 #include"common.h"
-
+#define LogVec3(name,val) std::cout<<name <<" : "<<val.x<<" , "<< val.y << " , "<<val.z << std::endl;
 float xPos, zPos = 0.0f;
 float paddleSpeed = 2.0f;
 glm::vec2 centre(0.5f, 0.5f);
@@ -312,6 +312,7 @@ int main()
 	 -0.5f, -0.5f, -0.5f,    0.0f, -1.0f, 0.0f,   0.0f, 1.0f
 	};
 
+	
 	//VBO - vertex buffer object
 	//EBO - element buffer object
 	//VAO - vertex array object
@@ -376,18 +377,19 @@ int main()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);*/
 
+	
+
+	/*Shader lineShader("Resources/Shaders/line.vert",
+		"Resources/Shaders/light.frag");
+
+	lineShader.use();*/
+
 	Shader lightShader("Resources/Shaders/light.vert",
 		"Resources/Shaders/light.frag");
 
-	lightShader.use();
-
-	
 #pragma endregion
 
 #pragma region Shaders
-
-	
-	
 
 	
 	
@@ -404,8 +406,10 @@ int main()
 
 	std::cout << "starting game loop -" << std::endl;
 
-	Camera camera(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f);
+	Camera camera(glm::vec3(1.5f, 2.0f, -5.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f);
 	
+	
+
 #pragma region RenderLoop
 	//game loop
 	while (!glfwWindowShouldClose(window))
@@ -422,17 +426,16 @@ int main()
 		CameraInput(window, camera);
 		LightInput(window);
 
+		//LogVec3("camPos", camera.Position);
 		//view matrix
 		glm::mat4 view = glm::mat4(1.0f);
 
-		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-		glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
-		glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 1.0f);
 		glm::vec3 lightPos = glm::vec3(xPos, 0.0f, zPos);
 
 		view = camera.GetViewMatrix();
 		
 		//view = glm::rotate(view,(float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		//LogVec3("lightPos", lightPos);
 
 		//projection matrix
 		glm::mat4 proj = glm::mat4(1.0f);
@@ -446,7 +449,7 @@ int main()
 			///draw Cube
 			defaultShader.use();
 			model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(-0.5f+(1.0f*i), 0.0f, 0.0f));
+			model = glm::translate(model, glm::vec3(-0.5f+(1.0f*i),0.0f, 0.0f));
 			model = glm::scale(model, glm::vec3(0.5));
 			//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
 			defaultShader.SetMat4("model", model);
@@ -454,6 +457,7 @@ int main()
 			defaultShader.SetMat4("proj", proj);
 			defaultShader.SetFloat("time", glfwGetTime());
 			defaultShader.SetVec3("lightPos", lightPos);
+			defaultShader.SetFloat("ambient", 0.2f);
 			//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
 			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -467,11 +471,15 @@ int main()
 		lightShader.SetMat4("model", model);
 		lightShader.SetMat4("view", view);
 		lightShader.SetMat4("proj", proj);
+		lightShader.SetVec3("objectColor", glm::vec3(1.0f));
 		
 
 		glBindVertexArray(VAO);
 
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+		
+		
 		//Log(glfwGetTime());
 
 		/* Swap front and back buffers */
