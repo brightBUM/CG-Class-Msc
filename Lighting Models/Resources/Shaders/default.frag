@@ -4,15 +4,21 @@ out vec4 FragColor;
 in vec2 TexCoord;
 in vec3 FragPos;
 in vec3 Normal;
-uniform float ambient;
 uniform sampler2D texSampler_0;
 uniform sampler2D texSampler_1;
 uniform float time;
-uniform int specularStrength;
 uniform vec3 objectColor ;
 uniform vec3 lightPos ;
 uniform vec3 lightColor ;
 uniform vec3 camPos ;
+
+struct Material
+{
+	float ambient;
+	int specularStrength;
+};
+
+uniform Material material;
 void main()
 {
 	vec4 texValue_0 = texture(texSampler_0,TexCoord);
@@ -29,10 +35,10 @@ void main()
 	vec3 refLightDir = reflect(lightDir,A);
 	float specDotValue = dot(-refLightDir,viewDir);
 	float specular = max(specDotValue,0.0f);
-	specular = pow(specular,specularStrength)*specularMap.r;
+	specular = pow(specular,material.specularStrength)*specularMap.r;
 		
 	//phong lighting
-	FragColor = vec4(texValue_0.rgb*(diffuse+ambient+specular)*lightColor,1.0f);
+	FragColor = vec4(texValue_0.rgb*(diffuse+material.ambient+specular)*lightColor,1.0f);
 
 //	FragColor = vec4(specular*texValue_0);
 //	vec4 texValue_1 = texture(texSampler_1,TexCoord);

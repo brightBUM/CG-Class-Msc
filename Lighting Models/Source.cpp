@@ -461,11 +461,11 @@ int main()
 			defaultShader.SetMat4("view", view);
 			defaultShader.SetMat4("proj", proj);
 			defaultShader.SetFloat("time", glfwGetTime());
-			defaultShader.SetInt("specularStrength", 64);
+			defaultShader.SetInt("material.specularStrength", 16*i);
 			defaultShader.SetVec3("lightPos", lightPos);
 			defaultShader.SetVec3("lightColor", lightColor);
 			defaultShader.SetVec3("camPos", camera.Position);
-			defaultShader.SetFloat("ambient", 0.2f);
+			defaultShader.SetFloat("material.ambient", 0.2f*i);
 			//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
 			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
