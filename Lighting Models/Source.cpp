@@ -47,6 +47,9 @@ void LoadTexture(unsigned int& texture, const char* fileName)
 	{
 		switch (nrChannels)
 		{
+		case 1:
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
+			break;
 		case 3: // jpg format
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 			break;
@@ -347,19 +350,20 @@ int main()
 		//circleShader.use();
 
 	unsigned int texture_0, texture_1;
-	LoadTexture(texture_0, "Resources/Textures/yellow_ball.png");
-	//LoadTexture(texture_1, "Resources/Textures/cat_close.png");
+	LoadTexture(texture_0, "Resources/Textures/lapis_ore.png");
+	LoadTexture(texture_1, "Resources/Textures/lapis_ore_s.png");
 
 
 	defaultShader.use();
 	//circleShader.SetInt("texSampler_0", 0);
 	defaultShader.SetInt("texSampler_0", 0);
+	defaultShader.SetInt("texSampler_1", 1);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_0);
 
-	/*glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture_1);*/
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture_1);
 
 
 	//lighting params
@@ -431,6 +435,7 @@ int main()
 		glm::mat4 view = glm::mat4(1.0f);
 
 		glm::vec3 lightPos = glm::vec3(xPos, 0.0f, zPos);
+		glm::vec3 lightColor = glm::vec3(1.0f);
 
 		view = camera.GetViewMatrix();
 		
@@ -458,6 +463,7 @@ int main()
 			defaultShader.SetFloat("time", glfwGetTime());
 			defaultShader.SetInt("specularStrength", 64);
 			defaultShader.SetVec3("lightPos", lightPos);
+			defaultShader.SetVec3("lightColor", lightColor);
 			defaultShader.SetVec3("camPos", camera.Position);
 			defaultShader.SetFloat("ambient", 0.2f);
 			//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
@@ -473,7 +479,7 @@ int main()
 		lightShader.SetMat4("model", model);
 		lightShader.SetMat4("view", view);
 		lightShader.SetMat4("proj", proj);
-		lightShader.SetVec3("objectColor", glm::vec3(1.0f));
+		lightShader.SetVec3("objectColor", lightColor);
 		
 
 		glBindVertexArray(VAO);
