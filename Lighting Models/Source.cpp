@@ -7,12 +7,14 @@
 #include"stb_image.h"
 #include"glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-#define HEIGHT 600
-#define WIDTH 600
+#define HEIGHT 1200
+#define WIDTH 1200
 #include<vector>
 #include"Camera.h"
 #include"common.h"
 #define LogVec3(name,val) std::cout<<name <<" : "<<val.x<<" , "<< val.y << " , "<<val.z << std::endl;
+const float Deg2Rad = 3.14159265f / 180.0f;
+
 float xPos, zPos = 0.0f;
 float paddleSpeed = 2.0f;
 glm::vec2 centre(0.5f, 0.5f);
@@ -163,10 +165,10 @@ int main()
 
 	float vertices[] =
 	{
-		//pos                //col			   //Tex Coords
+		//pos                //normal		   //Tex Coords
 		 0.5f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 1.0f,1.0f,  // point -0
-		 0.5f, -0.5f, 0.0f,	 0.0f, 1.0f, 0.0f, 1.0f,0.0f,  // point -1
-		-0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f, 0.0f,0.0f,  // point -2
+		 0.5f, -0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 1.0f,0.0f,  // point -1
+		-0.5f, -0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 0.0f,0.0f,  // point -2
 		-0.5f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 0.0f,1.0f,  // point -3
 	};
 
@@ -327,10 +329,10 @@ int main()
 	//Binding the buffer - selecting current buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	//assign vertex data to buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices3), cubeVertices3, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices2), cubeIndices2, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -346,12 +348,12 @@ int main()
 		"Resources/Shaders/default.frag");
 	/*Shader circleShader("Resources/Shaders/default.vert",
 		"Resources/Shaders/circle.frag");*/
-
+		
 		//circleShader.use();
 
 	unsigned int texture_0, texture_1;
-	LoadTexture(texture_0, "Resources/Textures/lapis_ore.png");
-	LoadTexture(texture_1, "Resources/Textures/lapis_ore_s.png");
+	LoadTexture(texture_0, "Resources/Textures/long_white_tiles_diff_2k.png");
+	LoadTexture(texture_1, "Resources/Textures/long_white_tiles_arm_2k.png");
 
 
 	defaultShader.use();
@@ -367,21 +369,23 @@ int main()
 
 
 	//lighting params
-	/*unsigned int lightVAO,lightVBO;
+	unsigned int lightVAO,lightVBO,lightEBO;
 	
 	glGenVertexArrays(1, &lightVAO);
 	glGenBuffers(1, &lightVBO);
+	glGenBuffers(1, &lightEBO);
 
 	glBindVertexArray(lightVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices3), cubeVertices3, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices2), cubeIndices2, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);*/
-
-	
 
 	/*Shader lineShader("Resources/Shaders/line.vert",
 		"Resources/Shaders/light.frag");
@@ -434,7 +438,7 @@ int main()
 		//view matrix
 		glm::mat4 view = glm::mat4(1.0f);
 
-		glm::vec3 lightPos = glm::vec3(xPos, 0.0f, zPos);
+		glm::vec3 lightPos = glm::vec3(xPos, 0.25f, zPos);
 		glm::vec3 lightColor = glm::vec3(1.0f);
 
 		view = camera.GetViewMatrix();
@@ -449,27 +453,25 @@ int main()
 
 		glm::mat4 model = glm::mat4(1.0f);
 
-		for (int i = 0; i < 5; i++)
-		{
-			///draw Cube
-			defaultShader.use();
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(-0.5f+(1.0f*i),0.0f, 0.0f));
-			model = glm::scale(model, glm::vec3(0.5));
-			//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
-			defaultShader.SetMat4("model", model);
-			defaultShader.SetMat4("view", view);
-			defaultShader.SetMat4("proj", proj);
-			defaultShader.SetFloat("time", glfwGetTime());
-			defaultShader.SetInt("material.specularStrength", 16*i);
-			defaultShader.SetVec3("lightPos", lightPos);
-			defaultShader.SetVec3("lightColor", lightColor);
-			defaultShader.SetVec3("camPos", camera.Position);
-			defaultShader.SetFloat("material.ambient", 0.2f*i);
-			//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
-			glBindVertexArray(VAO);
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-		}
+		///draw Cube
+		defaultShader.use();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
+		model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
+		model = glm::scale(model, glm::vec3(2.0f));
+		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
+		defaultShader.SetMat4("model", model);
+		defaultShader.SetMat4("view", view);
+		defaultShader.SetMat4("proj", proj);
+		defaultShader.SetFloat("time", glfwGetTime());
+		defaultShader.SetInt("material.specularStrength", 64);
+		defaultShader.SetVec3("lightPos", lightPos);
+		defaultShader.SetVec3("lightColor", lightColor);
+		defaultShader.SetVec3("camPos", camera.Position);
+		defaultShader.SetFloat("material.ambient", 0.2f);
+		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		
 		//lighting placeholder - cube
 		lightShader.use();
@@ -482,11 +484,9 @@ int main()
 		lightShader.SetVec3("objectColor", lightColor);
 		
 
-		glBindVertexArray(VAO);
-
+		glBindVertexArray(lightVAO);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-		
 		
 		//Log(glfwGetTime());
 

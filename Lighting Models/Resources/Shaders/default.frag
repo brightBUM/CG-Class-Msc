@@ -32,8 +32,8 @@ void main()
 
 	//specular
 	vec3 viewDir = normalize(camPos-FragPos);
-	vec3 refLightDir = reflect(lightDir,A);
-	float specDotValue = dot(-refLightDir,viewDir);
+	vec3 refLightDir = reflect(-lightDir,A);
+	float specDotValue = dot(refLightDir,viewDir);
 	float specular = max(specDotValue,0.0f);
 	specular = pow(specular,material.specularStrength)*specularMap.r;
 		
