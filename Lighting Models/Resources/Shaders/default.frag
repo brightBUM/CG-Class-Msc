@@ -6,6 +6,7 @@ in vec3 FragPos;
 in vec3 Normal;
 uniform sampler2D texSampler_0;
 uniform sampler2D texSampler_1;
+uniform sampler2D texSampler_2;
 uniform float time;
 uniform vec3 objectColor ;
 uniform vec3 lightPos ;
@@ -23,7 +24,11 @@ void main()
 {
 	vec4 texValue_0 = texture(texSampler_0,TexCoord);
 	vec4 specularMap = texture(texSampler_1,TexCoord);
-	vec3 A = Normal;
+	vec4 normalMap = texture(texSampler_2,TexCoord);
+	vec3 A = normalMap.rgb;
+	A = normalize(A * 2.0 - 1.0);  // color space to direction space
+//	A = A*0.5f+0.5f; // direction space to color space 
+
 	vec3 lightDir = normalize(lightPos-FragPos);
 
 	//diffuse
@@ -39,10 +44,7 @@ void main()
 		
 	//phong lighting
 	FragColor = vec4(texValue_0.rgb*(diffuse+material.ambient+specular)*lightColor,1.0f);
+	
+//	FragColor = vec4(A,1.0f);
 
-//	FragColor = vec4(specular*texValue_0);
-//	vec4 texValue_1 = texture(texSampler_1,TexCoord);
-//	FragColor = vec4(mix(texValue_0,texValue_1,0.0f));
-
-//	FragColor = vec4(vec3(1.0f,0.0f,0.0f),1.0f);
 } 

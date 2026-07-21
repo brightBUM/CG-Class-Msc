@@ -7,8 +7,8 @@
 #include"stb_image.h"
 #include"glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-#define HEIGHT 1200
-#define WIDTH 1200
+#define HEIGHT 600
+#define WIDTH 600
 #include<vector>
 #include"Camera.h"
 #include"common.h"
@@ -351,21 +351,26 @@ int main()
 		
 		//circleShader.use();
 
-	unsigned int texture_0, texture_1;
+	unsigned int texture_0, texture_1,texture_2;
 	LoadTexture(texture_0, "Resources/Textures/long_white_tiles_diff_2k.png");
 	LoadTexture(texture_1, "Resources/Textures/long_white_tiles_arm_2k.png");
+	LoadTexture(texture_2, "Resources/Textures/long_white_tiles_nor_gl_2k.png");
 
 
 	defaultShader.use();
 	//circleShader.SetInt("texSampler_0", 0);
 	defaultShader.SetInt("texSampler_0", 0);
 	defaultShader.SetInt("texSampler_1", 1);
+	defaultShader.SetInt("texSampler_2", 2);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_0);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texture_1);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, texture_2);
 
 
 	//lighting params
@@ -414,7 +419,7 @@ int main()
 
 	std::cout << "starting game loop -" << std::endl;
 
-	Camera camera(glm::vec3(1.5f, 2.0f, -5.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f);
+	Camera camera(glm::vec3(-1.44135f, 0.936734f, 0.412851f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f);
 	
 	
 
@@ -434,7 +439,7 @@ int main()
 		CameraInput(window, camera);
 		LightInput(window);
 
-		//LogVec3("camPos", camera.Position);
+		LogVec3("camPos", camera.Position);
 		//view matrix
 		glm::mat4 view = glm::mat4(1.0f);
 
@@ -457,7 +462,7 @@ int main()
 		defaultShader.use();
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
-		model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
+		//model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
 		model = glm::scale(model, glm::vec3(2.0f));
 		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
 		defaultShader.SetMat4("model", model);
