@@ -25,8 +25,8 @@ void main()
 	vec4 texValue_0 = texture(texSampler_0,TexCoord);
 	vec4 specularMap = texture(texSampler_1,TexCoord);
 	vec4 normalMap = texture(texSampler_2,TexCoord);
-	vec3 A = normalMap.rgb;
-	A = normalize(A * 2.0 - 1.0);  // color space to direction space
+	vec3 A = Normal;
+//	A = normalize(A * 2.0 - 1.0);  // color space to direction space
 //	A = A*0.5f+0.5f; // direction space to color space 
 
 	vec3 lightDir = normalize(lightPos-FragPos);

@@ -166,10 +166,10 @@ int main()
 	float vertices[] =
 	{
 		//pos                //normal		   //Tex Coords
-		 0.5f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 1.0f,1.0f,  // point -0
-		 0.5f, -0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 1.0f,0.0f,  // point -1
-		-0.5f, -0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 0.0f,0.0f,  // point -2
-		-0.5f,  0.5f, 0.0f,	 0.0f, 0.0f, 1.0f, 0.0f,1.0f,  // point -3
+		 0.5f,  0.5f, 0.0f,	 0.0f, 0.0f, -1.0f, 1.0f,1.0f,  // point -0
+		 0.5f, -0.5f, 0.0f,	 0.0f, 0.0f, -1.0f, 1.0f,0.0f,  // point -1
+		-0.5f, -0.5f, 0.0f,	 0.0f, 0.0f, -1.0f, 0.0f,0.0f,  // point -2
+		-0.5f,  0.5f, 0.0f,	 0.0f, 0.0f, -1.0f, 0.0f,1.0f,  // point -3
 	};
 
 	int indices[] = {
@@ -352,10 +352,14 @@ int main()
 		//circleShader.use();
 
 	unsigned int texture_0, texture_1,texture_2;
+	//minecraft path
+	/*LoadTexture(texture_0, "Resources/Textures/minecraft blocks/bricks.png");
+	LoadTexture(texture_1, "Resources/Textures/minecraft blocks/bricks_s.png");
+	LoadTexture(texture_2, "Resources/Textures/minecraft blocks/bricks_n.png");*/
+
 	LoadTexture(texture_0, "Resources/Textures/long_white_tiles_diff_2k.png");
 	LoadTexture(texture_1, "Resources/Textures/long_white_tiles_arm_2k.png");
 	LoadTexture(texture_2, "Resources/Textures/long_white_tiles_nor_gl_2k.png");
-
 
 	defaultShader.use();
 	//circleShader.SetInt("texSampler_0", 0);
@@ -415,11 +419,12 @@ int main()
 	//enable depth 
 	glEnable(GL_DEPTH_TEST);
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
+	//glPolygonMode(GL_BACK, GL_LINE);
 
 	std::cout << "starting game loop -" << std::endl;
 
-	Camera camera(glm::vec3(-1.44135f, 0.936734f, 0.412851f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f);
+	Camera camera(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f);
 	
 	
 
@@ -439,7 +444,7 @@ int main()
 		CameraInput(window, camera);
 		LightInput(window);
 
-		LogVec3("camPos", camera.Position);
+		//LogVec3("camPos", camera.Position);
 		//view matrix
 		glm::mat4 view = glm::mat4(1.0f);
 
@@ -461,9 +466,9 @@ int main()
 		///draw Cube
 		defaultShader.use();
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 1.0f));
 		//model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
-		model = glm::scale(model, glm::vec3(2.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
 		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
 		defaultShader.SetMat4("model", model);
 		defaultShader.SetMat4("view", view);
