@@ -4,7 +4,7 @@ out vec4 FragColor;
 in vec2 TexCoord;
 in vec3 FragPos;
 in vec3 Normal;
-//uniform sampler2D texSampler_0;
+uniform sampler2D texSampler_0;
 //uniform sampler2D texSampler_1;
 //uniform sampler2D texSampler_2;
 uniform float time;
@@ -22,7 +22,7 @@ struct Material
 uniform Material material;
 void main()
 {
-	//vec4 texValue_0 = texture(texSampler_0,TexCoord);
+	vec4 texValue_0 = texture(texSampler_0,TexCoord);
 	//vec4 specularMap = texture(texSampler_1,TexCoord);
 	//vec4 normalMap = texture(texSampler_2,TexCoord);
 	vec3 A = Normal;
@@ -43,7 +43,7 @@ void main()
 	specular = pow(specular,material.specularStrength);
 		
 	//phong lighting
-	FragColor = vec4((diffuse+material.ambient+specular)*lightColor,1.0f);
+	FragColor = vec4(texValue_0.rgb*(diffuse+material.ambient+specular)*lightColor,1.0f);
 	
 //	FragColor = vec4(A,1.0f);
 

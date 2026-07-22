@@ -298,7 +298,7 @@ int main()
 	 -0.5f, -0.5f, -0.5f,    0.0f, -1.0f, 0.0f,   0.0f, 1.0f
 	};
 
-	SphereData sphereData = GenerateSphere(0.5f, 4, 16);
+	SphereData sphereData = GenerateSphere(0.5f, 8, 8);
 	
 
 	//VBO - vertex buffer object
@@ -340,7 +340,7 @@ int main()
 	LoadTexture(texture_1, "Resources/Textures/minecraft blocks/bricks_s.png");
 	LoadTexture(texture_2, "Resources/Textures/minecraft blocks/bricks_n.png");*/
 
-	LoadTexture(texture_0, "Resources/Textures/long_white_tiles_diff_2k.png");
+	LoadTexture(texture_0, "Resources/Textures/2k_earth_daymap.jpg");
 	LoadTexture(texture_1, "Resources/Textures/long_white_tiles_arm_2k.png");
 	LoadTexture(texture_2, "Resources/Textures/long_white_tiles_nor_gl_2k.png");
 
@@ -489,6 +489,9 @@ int main()
 		defaultShader.SetVec3("camPos", camera.Position);
 		defaultShader.SetFloat("material.ambient", 0.2f);
 		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture_1);
+
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 		
@@ -502,6 +505,7 @@ int main()
 		lightShader.SetMat4("proj", proj);
 		lightShader.SetVec3("objectColor", lightColor);
 		
+		
 
 		glBindVertexArray(lightVAO);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -510,9 +514,9 @@ int main()
 		defaultShader.use();
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(-2.0f, 0.0f, 1.0f));
-		//model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
+		model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
 		//model = glm::scale(model, glm::vec3(1.0f));
-		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 		defaultShader.SetMat4("model", model);
 		defaultShader.SetMat4("view", view);
 		defaultShader.SetMat4("proj", proj);
@@ -523,6 +527,9 @@ int main()
 		defaultShader.SetVec3("camPos", camera.Position);
 		defaultShader.SetFloat("material.ambient", 0.2f);
 		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture_0);
+
 		glBindVertexArray(sphereVAO);
 		glDrawElements(GL_TRIANGLES, sphereData.indices.size(), GL_UNSIGNED_INT, 0);
 
@@ -540,8 +547,10 @@ int main()
 		gouradShader.SetVec3("lightPos", lightPos);
 		gouradShader.SetVec3("lightColor", lightColor);
 		gouradShader.SetVec3("camPos", camera.Position);
-		gouradShader.SetFloat("material.ambient", 0.0f);
+		gouradShader.SetFloat("material.ambient", 0.2f);
 		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
+
+
 		glBindVertexArray(sphereVAO);
 		glDrawElements(GL_TRIANGLES, sphereData.indices.size(), GL_UNSIGNED_INT, 0);
 
