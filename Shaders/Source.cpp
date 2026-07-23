@@ -93,7 +93,8 @@ int main()
 		defaultShader.SetFloat("time", glfwGetTime());
 
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glDrawElements(GL_LINE, 3, GL_UNSIGNED_INT, 0);
 
 		//Log(glfwGetTime());
 

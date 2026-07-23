@@ -3,8 +3,8 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IncludePath>C:\Users\BSP Admin\source\repos\CG Class Msc\Deps\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\BSP Admin\source\repos\CG Class Msc\Deps\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\chink\Documents\GitHub\CG-Class-Msc\Deps\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\chink\Documents\GitHub\CG-Class-Msc\Deps\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
