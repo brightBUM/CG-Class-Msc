@@ -9,15 +9,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #define HEIGHT 1200
 #define WIDTH 1200
+
 #include<vector>
 #include"Camera.h"
 #include"common.h"
+#include"SphereData.hpp"
 
 float xPos, zPos = 2.0f;
 float paddleSpeed = 2.0f;
 glm::vec2 centre(0.5f, 0.5f);
 float radius = 0.5f;
-
+const float Deg2Rad = 3.14159265f / 180.0f;
 
 double worldX, worldY;
 double prevX, prevY;
@@ -241,6 +243,9 @@ int main()
 		20, 21, 22, 22, 23, 20
 	};
 
+	SphereData sphereData = GenerateSphere(80.0f, 16, 16);
+
+
 	//VBO - vertex buffer object
 	//EBO - element buffer object
 	//VAO - vertex array object
@@ -284,7 +289,7 @@ int main()
 
 	unsigned int texture_0, texture_1;
 	LoadTexture(texture_0, "Resources/Textures/ball.png");
-	//LoadTexture(texture_1, "Resources/Textures/cat_close.png");
+	LoadTexture(texture_1, "Resources/Textures/2k_earth_daymap.jpg");
 
 
 	defaultShader.use();
@@ -293,6 +298,30 @@ int main()
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_0);
+
+	//sphere params
+	unsigned int sphereVAO, sphereVBO, sphereEBO;
+
+	glGenBuffers(1, &sphereVBO);
+	glGenBuffers(1, &sphereEBO);
+	glGenVertexArrays(1, &sphereVAO);
+
+	glBindVertexArray(sphereVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+	glBufferData(GL_ARRAY_BUFFER, sphereData.vertices.size() * sizeof(float), sphereData.vertices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphereData.indices.size() * sizeof(unsigned int), sphereData.indices.data(), GL_STATIC_DRAW);
+
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	/*glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);*/
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	/*glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texture_1);*/
@@ -332,6 +361,8 @@ int main()
 		
 		CameraInput(window, camera);
 
+		glm::vec3 lightPos = glm::vec3(xPos, 0.25f, zPos);
+		glm::vec3 lightColor = glm::vec3(1.0f);
 
 		//view matrix
 		glm::mat4 view = glm::mat4(1.0f);
@@ -364,10 +395,35 @@ int main()
 			defaultShader.SetMat4("proj", proj);
 
 			//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture_0);
+
 			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 		}
 		
+		//draw sphere
+		defaultShader.use();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.0f));
+		model = glm::rotate(model, 90.0f * Deg2Rad, glm::vec3(1.0f, 0.0f, 0.0f));
+		//model = glm::scale(model, glm::vec3(1.0f));
+		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		defaultShader.SetMat4("model", model);
+		defaultShader.SetMat4("view", view);
+		defaultShader.SetMat4("proj", proj);
+		defaultShader.SetFloat("time", glfwGetTime());
+		defaultShader.SetInt("material.specularStrength", 128);
+		defaultShader.SetVec3("lightPos", lightPos);
+		defaultShader.SetVec3("lightColor", lightColor);
+		defaultShader.SetVec3("camPos", camera.Position);
+		defaultShader.SetFloat("material.ambient", 0.2f);
+		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture_1);
+
+		glBindVertexArray(sphereVAO);
+		glDrawElements(GL_TRIANGLES, sphereData.indices.size(), GL_UNSIGNED_INT, 0);
 
 		//Log(glfwGetTime());
 

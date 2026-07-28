@@ -25,7 +25,7 @@ glm::vec3 Lerp(glm::vec3 A, glm::vec3 B, float t)
 {
 	return A + ((B - A) * t);
 }
-
+//DecastleJau's method for higher order bezier curve
 glm::vec3 BezierPoint(const std::vector<glm::vec3>& points, float t)
 {
 	if (points.size() == 1)
@@ -270,9 +270,9 @@ int main()
 	{
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(0.1f, 0.5f, 0.4f, 1.0f);
-
-		FPSCounter(window);
+		glClearColor(0.373, 0.294, 0.545, 1.0f);
+		  
+		FPSCounter(window); 
 
 		//logic
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT == GLFW_PRESS))
