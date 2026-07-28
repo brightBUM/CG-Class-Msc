@@ -14,10 +14,11 @@ int Width = 800;
 int Height = 600;
 
 std::vector<glm::vec3> points;
-std::vector<glm::vec3> lerpPoints;
+std::vector<glm::vec3> bezierPoints;
 
+glm::vec3* selectedObject = nullptr;
 bool clicked;
-float t = 0.0f;
+float t = 0.2f;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
@@ -30,6 +31,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	//	Log("xPos : " << worldX << " , yPos : " << worldY);
 	//	//Log("points : " << points.size()/2);
 	//}
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+	{
+		selectedObject = nullptr;
+	}
 }
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -49,7 +54,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 		t -= 0.1f ;
 		Log(t);
-		Log(lerpPoints[0].x << ", " << lerpPoints[0].y);
+		Log(bezierPoints[0].x << ", " << bezierPoints[0].y);
 
 		//radius += 0.1f;
 	}
@@ -61,7 +66,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		//dec
 		t += 0.1f;
 		Log(t);
-		Log(lerpPoints[0].x << ", " << lerpPoints[0].y);
+		Log(bezierPoints[0].x << ", " << bezierPoints[0].y);
 
 		//radius -= 0.1f;
 
@@ -101,9 +106,11 @@ int main()
 	std::cout << "starting game loop - bezier curve " << std::endl;
 
 	//1st vertex
-	points.push_back(glm::vec3(0.0f, -0.5f, 0.0f));
+	points.push_back(glm::vec3(-0.5f, 0.0f,0.0f));
 	//2nd vertex
-	points.push_back(glm::vec3(0.2f, 0.5f,0.0f));
+	points.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
+	//3rd vertex
+	points.push_back(glm::vec3(0.5f, 0.0f, 0.0f));
 
 
 	unsigned int VBO, VAO,lerpVAO,lerpVBO;
@@ -121,19 +128,26 @@ int main()
 	Shader defaultShader("Resources/Shaders/default.vert",
 		"Resources/Shaders/default.frag");
 
-	auto lerpPoint = Lerp(points[0], points[1], t);
-	lerpPoints.push_back(lerpPoint);
+	for (int i = 0;i <= 10;i++)
+	{
+		t = i * 0.1f;
+		auto lerpPoint01 = Lerp(points[0], points[1], t);
+		auto lerpPoint12 = Lerp(points[1], points[2], t);
+		auto lerpPoint012 = Lerp(lerpPoint01, lerpPoint12, t);
+		bezierPoints.push_back(lerpPoint012);
+	}
+	
 
 	glGenBuffers(1, &lerpVBO);
 	glGenVertexArrays(1, &lerpVAO);
 	glBindVertexArray(lerpVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, lerpVBO);
-	glBufferData(GL_ARRAY_BUFFER, lerpPoints.size() * sizeof(glm::vec3), lerpPoints.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, bezierPoints.size() * sizeof(glm::vec3), bezierPoints.data(), GL_STATIC_DRAW);
 	
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	Log(lerpPoints[0].x<<", "<< lerpPoints[0].y);
+	Log(bezierPoints[0].x<<", "<< bezierPoints[0].y);
 	//game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -142,7 +156,39 @@ int main()
 		glClearColor(0.1f, 0.5f, 0.4f, 1.0f);
 
 		//logic
-		lerpPoints[0] = Lerp(points[0], points[1], t);
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1))
+		{
+			auto mousePos = glm::vec3(worldX, worldY, 0.0f);
+			//
+			if (selectedObject!=nullptr)
+			{
+				*selectedObject = mousePos;
+			}
+			else
+			{
+				for (auto& i : points)
+				{
+					
+					if (glm::distance(i, mousePos) <= 0.2f)
+					{
+						//Log("in mouse range "<<i.x<<" ,"<<i.y);
+						selectedObject = &i;
+					}
+				}
+			}
+
+
+			
+		}
+
+		for (int i = 0;i <= 10;i++)
+		{
+			t = i * 0.1f;
+			auto lerpPoint01 = Lerp(points[0], points[1], t);
+			auto lerpPoint12 = Lerp(points[1], points[2], t);
+			auto lerpPoint012 = Lerp(lerpPoint01, lerpPoint12, t);
+			bezierPoints[i] = lerpPoint012;
+		}
 
 		//lines
 		defaultShader.use();
@@ -168,9 +214,10 @@ int main()
 		//lerpPoints
 		glPointSize(15.0f);
 		glBindVertexArray(lerpVAO);
-
+		glBindBuffer(GL_ARRAY_BUFFER, lerpVBO);
+		glBufferData(GL_ARRAY_BUFFER, bezierPoints.size() * sizeof(glm::vec3), bezierPoints.data(), GL_STATIC_DRAW);
 		defaultShader.SetVec3("objectColor", glm::vec3(1.0f));
-		glDrawArrays(GL_POINTS, 0, lerpPoints.size());
+		glDrawArrays(GL_LINE_STRIP, 0, bezierPoints.size());
 
 
 		/* Swap front and back buffers */
