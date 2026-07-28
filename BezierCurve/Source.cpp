@@ -13,7 +13,7 @@
 float worldX, worldY;
 
 std::vector<glm::vec3> points;
-std::vector<glm::vec3> lerpPoints;
+std::vector<glm::vec3> BezierPoints;
 
 bool clicked;
 float t = 0.0f;
@@ -56,14 +56,14 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 		points.insert(it, newPoint);
 
-		lerpPoints.clear();
+		BezierPoints.clear();
 
 		for (int i = 0;i <= segments;i++)
 		{
 			t = i / static_cast<float>(segments);
 			auto point = BezierPoint(points, t);
 
-			lerpPoints.push_back(point);
+			BezierPoints.push_back(point);
 
 		}
 		
@@ -92,7 +92,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		if (t < 1)
 			t += 0.1f;
 		Log(t);
-		Log(lerpPoints[0].x << ", " << lerpPoints[0].y);
+		Log(BezierPoints[0].x << ", " << BezierPoints[0].y);
 
 		//radius += 0.1f;
 	}
@@ -105,7 +105,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		if (t > 0)
 			t -= 0.1f;
 		Log(t);
-		Log(lerpPoints[0].x << ", " << lerpPoints[0].y);
+		Log(BezierPoints[0].x << ", " << BezierPoints[0].y);
 		
 
 		//radius -= 0.1f;
@@ -215,7 +215,7 @@ int main()
 		t = i / static_cast<float>(segments);
 		auto point = BezierPoint(points, t);
 
-		lerpPoints.push_back(point);
+		BezierPoints.push_back(point);
 
 	}
 	
@@ -223,7 +223,7 @@ int main()
 	glGenVertexArrays(1, &lerpVAO);
 	glBindVertexArray(lerpVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, lerpVBO);
-	glBufferData(GL_ARRAY_BUFFER, lerpPoints.size() * sizeof(glm::vec3), lerpPoints.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, BezierPoints.size() * sizeof(glm::vec3), BezierPoints.data(), GL_STATIC_DRAW);
 	
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -301,7 +301,7 @@ int main()
 			t = i/static_cast<float>(segments);
 			auto point =  BezierPoint(points, t);
 
-			lerpPoints[i] = point;
+			BezierPoints[i] = point;
 
 		}
 
@@ -331,14 +331,14 @@ int main()
 		glBindVertexArray(lerpVAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, lerpVBO);
-		glBufferData(GL_ARRAY_BUFFER, lerpPoints.size() * sizeof(glm::vec3), lerpPoints.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, BezierPoints.size() * sizeof(glm::vec3), BezierPoints.data(), GL_STATIC_DRAW);
 
 		defaultShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
 		glLineWidth(5.0f);
-		glDrawArrays(GL_LINE_STRIP, 0, lerpPoints.size());
+		glDrawArrays(GL_LINE_STRIP, 0, BezierPoints.size());
 
 		defaultShader.SetVec3("objectColor", glm::vec3(0.0f));
-		glDrawArrays(GL_POINTS, 0, lerpPoints.size());
+		glDrawArrays(GL_POINTS, 0, BezierPoints.size());
 		
 
 		//object

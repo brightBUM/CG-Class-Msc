@@ -15,10 +15,10 @@ float worldX, worldY;
 double prevX, prevY;
 
 std::vector<glm::vec3> points;
-std::vector<glm::vec3> lerpPoints;
+std::vector<glm::vec3> BezierPoints;
 
 float t = 0.0f;
-int segments = 20;
+int segments = 10;
 
 glm::vec3* selectedPoint = nullptr;
 glm::vec3 Lerp(glm::vec3 A, glm::vec3 B, float t)
@@ -190,14 +190,16 @@ glm::vec3 getMouseRay(float mouseX, float mouseY,
 	// 5. Normalize direction vector
 	return glm::normalize(ray_wor);
 }
-bool RayPlaneIntersection(glm::vec3 rayOrigin, glm::vec3 rayDir,glm::vec3 planePoint, glm::vec3 planeNormal,
-	float& t, glm::vec3& hitPoint)
+bool RayPlaneIntersection(glm::vec3 rayOrigin, glm::vec3 rayDir,glm::vec3 planePoint, 
+	glm::vec3 planeNormal,float& t, glm::vec3& hitPoint)
 {
 	float denom = glm::dot(planeNormal, rayDir);
 
-	if (std::abs(denom) > 1e-6f) {
+	if (std::abs(denom) > 1e-6f) 
+	{
 		t = glm::dot(planePoint - rayOrigin, planeNormal) / denom;
-		if (t >= 0.0f) {
+		if (t >= 0.0f) 
+		{
 			hitPoint = rayOrigin + t * rayDir;
 			return true;
 		}
@@ -236,75 +238,19 @@ int main()
 		return -1;
 	}
 	
-	std::cout << "starting game loop - bezier curve " << std::endl;
+	Log("starting game loop - bezier curve ");
 
-	//cube - pos,uv
-	float cubeVertices2[] = {
-		// ===== FRONT FACE =====
-		//    position           uv
-		-0.5f, -0.5f,  0.5f,     0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,     1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,     1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,     0.0f, 1.0f,
+	for (int i = 0;i < 3;i++)
+	{
+		for (int j = 0;j < 3;j++)
+		{
+			float x = i * 0.5f;
+			float z = j * 0.5f;
+			points.push_back(glm::vec3(x, 0.0f, z));
+		}
+	}
 
-		// ===== BACK FACE =====
-		-0.5f, -0.5f, -0.5f,     1.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,     0.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,     0.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,     1.0f, 1.0f,
-
-		// ===== LEFT FACE =====
-		-0.5f, -0.5f, -0.5f,     0.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,     1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,     1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,     0.0f, 1.0f,
-
-		// ===== RIGHT FACE =====
-		 0.5f, -0.5f, -0.5f,     1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,     0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,     0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,     1.0f, 1.0f,
-
-		 // ===== TOP FACE =====
-		 -0.5f,  0.5f,  0.5f,     0.0f, 1.0f,
-		  0.5f,  0.5f,  0.5f,     1.0f, 1.0f,
-		  0.5f,  0.5f, -0.5f,     1.0f, 0.0f,
-		 -0.5f,  0.5f, -0.5f,     0.0f, 0.0f,
-
-		 // ===== BOTTOM FACE =====
-		 -0.5f, -0.5f,  0.5f,     0.0f, 0.0f,
-		  0.5f, -0.5f,  0.5f,     1.0f, 0.0f,
-		  0.5f, -0.5f, -0.5f,     1.0f, 1.0f,
-		 -0.5f, -0.5f, -0.5f,     0.0f, 1.0f
-	};
-
-	unsigned int cubeIndices2[] = {
-		// FRONT
-		0, 1, 2,  2, 3, 0,
-
-		// BACK
-		4, 5, 6,  6, 7, 4,
-
-		// LEFT
-		8, 9, 10, 10, 11, 8,
-
-		// RIGHT
-		12, 13, 14, 14, 15, 12,
-
-		// TOP
-		16, 17, 18, 18, 19, 16,
-
-		// BOTTOM
-		20, 21, 22, 22, 23, 20
-	};
-
-	//1st vertex
-	points.push_back(glm::vec3(-0.5f, 0.0f, 0.0f));
-	//2nd vertex
-	points.push_back(glm::vec3(0.0f, 0.0f, 0.5f));
-	//3rd vertex
-	points.push_back(glm::vec3(0.5f, 0.0f, 0.0f));
-
+	Log("points size : "<<points.size());
 
 	unsigned int VBO, VAO, lerpVAO, lerpVBO;
 	glGenBuffers(1, &VBO);
@@ -318,26 +264,36 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	Shader defaultShader("Resources/Shaders/default.vert",
-						 "Resources/Shaders/default.frag");
-
 	Shader curveShader("Resources/Shaders/curve.vert",
 					   "Resources/Shaders/curve.frag");
 
-	for (int i = 0;i <= segments;i++)
+	for (int i = 0;i < points.size();i += 3)
 	{
-		t = i / static_cast<float>(segments);
-		auto point = BezierPoint(points, t);
+		std::vector<glm::vec3> rowPoints;
+		for (int j = i;j < i + 3;j++)
+		{
+			rowPoints.push_back(points[j]);
+		}
 
-		lerpPoints.push_back(point);
+		for (int k = 0;k <= segments;k++)
+		{
+			t = k / static_cast<float>(segments);
+
+			auto point = BezierPoint(rowPoints, t);
+
+			BezierPoints.push_back(point);
+		}
 
 	}
+	
+
+	Log("bezierPoints size : " << BezierPoints.size());
 
 	glGenBuffers(1, &lerpVBO);
 	glGenVertexArrays(1, &lerpVAO);
 	glBindVertexArray(lerpVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, lerpVBO);
-	glBufferData(GL_ARRAY_BUFFER, lerpPoints.size() * sizeof(glm::vec3), lerpPoints.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, BezierPoints.size() * sizeof(glm::vec3), BezierPoints.data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -345,37 +301,6 @@ int main()
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	float k = 0.0f;
-
-	unsigned int cubeVBO, cubeVAO, cubeEBO;
-	glGenBuffers(1, &cubeVBO);
-	glGenBuffers(1, &cubeEBO);
-	glGenVertexArrays(1, &cubeVAO);
-	glBindVertexArray(cubeVAO);
-	//Binding the buffer - selecting current buffer
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	//assign vertex data to buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices2), cubeVertices2, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices2), cubeIndices2, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-
-	unsigned int texture_0;
-	LoadTexture(texture_0, "Resources/Textures/yellow_ball.png");
-
-	defaultShader.use();
-	defaultShader.SetInt("texSampler_0", 0);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture_0);
 
 	Camera camera(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f);
 
@@ -442,27 +367,29 @@ int main()
 		}
 
 		//Log("selected Point : " << selectedPoint);
-		for (int i = 0;i <= segments;i++)
+	
+		for (int i = 0;i < points.size();i += 3)
 		{
-			t = i / static_cast<float>(segments);
-			auto point = BezierPoint(points, t);
+			std::vector<glm::vec3> rowPoints;
+			for (int j = i;j < i + 3;j++)
+			{
+				rowPoints.push_back(points[j]);
+			}
 
-			lerpPoints[i] = point;
+			int l = (i/3) * (segments+1);
+			
+			for (int k = l;k < l+ (segments + 1);k++)
+			{
+				t = ((segments + 1) - (l+ (segments + 1) -k))/ static_cast<float>(segments);
+				auto point = BezierPoint(rowPoints, t);
+
+				BezierPoints[k] = point;
+			}
+			Log("\n\n");
 
 		}
 
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 2.0f));
-		
-		defaultShader.use();
-		defaultShader.SetMat4("model", model);
-		defaultShader.SetMat4("view", view);
-		defaultShader.SetMat4("proj", proj);
-		defaultShader.SetFloat("time", (float)glfwGetTime());
-		defaultShader.SetVec3("objectColor", glm::vec3(1.0f,0.5f,0.0f));
-		glBindVertexArray(cubeVAO);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
 
 		//lines
 		model = glm::mat4(1.0f);
@@ -471,36 +398,45 @@ int main()
 		curveShader.SetMat4("view", view);
 		curveShader.SetMat4("proj", proj);
 		curveShader.SetFloat("time", (float)glfwGetTime());
-		glLineWidth(2.0f);
 		glBindVertexArray(VAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(glm::vec3), points.data(), GL_STATIC_DRAW);
 		
-		defaultShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
-		glDrawArrays(GL_LINE_STRIP, 0, points.size());
 
-		//bezier control points
+		glLineWidth(2.0f);
 		glPointSize(15.0f);
-		curveShader.SetVec3("objectColor", glm::vec3(1.0f));
-		glDrawArrays(GL_POINTS, 0, points.size());
+		//control points
+		for (int i = 0;i < points.size();i+=3)
+		{
+			curveShader.SetVec3("objectColor", glm::vec3(0.0f));
+			glDrawArrays(GL_LINE_STRIP, i, 3);
 
-		//lerpPoints
+			curveShader.SetVec3("objectColor", glm::vec3(1.0f));
+			glDrawArrays(GL_POINTS, i, 3);
+			
+		}
+		
+		
+
+		//Bezier Points
 		curveShader.use();
-
 		glPointSize(5.0f);
+		glLineWidth(5.0f);
+
 		glBindVertexArray(lerpVAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, lerpVBO);
-		glBufferData(GL_ARRAY_BUFFER, lerpPoints.size() * sizeof(glm::vec3), lerpPoints.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, BezierPoints.size() * sizeof(glm::vec3), BezierPoints.data(), GL_STATIC_DRAW);
 		
-		curveShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
-		glLineWidth(5.0f);
-		glDrawArrays(GL_LINE_STRIP, 0, lerpPoints.size());
+		for (int i = 0;i < BezierPoints.size() ;i += segments + 1)
+		{
+			curveShader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.0f));
+			glDrawArrays(GL_LINE_STRIP, i, 11);
 
-		curveShader.SetVec3("objectColor", glm::vec3(0.0f));
-		glDrawArrays(GL_POINTS, 0, lerpPoints.size());
-
+			curveShader.SetVec3("objectColor", glm::vec3(0.0f));
+			glDrawArrays(GL_POINTS, i, 11);
+		}
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
