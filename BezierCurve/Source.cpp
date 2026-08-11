@@ -105,11 +105,14 @@ int main()
 
 	std::cout << "starting game loop - bezier curve " << std::endl;
 
+	//quadratic - 3 control point
 	//1st vertex
 	points.push_back(glm::vec3(-0.5f, 0.0f,0.0f));
 	//2nd vertex
-	points.push_back(glm::vec3(0.0f, 0.5f, 0.0f));
+	points.push_back(glm::vec3(-0.5f, 0.5f, 0.0f));
 	//3rd vertex
+	points.push_back(glm::vec3(0.5f, 0.5f, 0.0f));
+	//4th vertex
 	points.push_back(glm::vec3(0.5f, 0.0f, 0.0f));
 
 
@@ -133,8 +136,13 @@ int main()
 		t = i * 0.1f;
 		auto lerpPoint01 = Lerp(points[0], points[1], t);
 		auto lerpPoint12 = Lerp(points[1], points[2], t);
+		auto lerpPoint23 = Lerp(points[2], points[3], t);
+
 		auto lerpPoint012 = Lerp(lerpPoint01, lerpPoint12, t);
-		bezierPoints.push_back(lerpPoint012);
+		auto lerpPoint123 = Lerp(lerpPoint12, lerpPoint23, t);
+		
+		auto lerpPoint0123 = Lerp(lerpPoint012, lerpPoint123, t);
+		bezierPoints.push_back(lerpPoint0123);
 	}
 	
 
@@ -186,8 +194,13 @@ int main()
 			t = i * 0.1f;
 			auto lerpPoint01 = Lerp(points[0], points[1], t);
 			auto lerpPoint12 = Lerp(points[1], points[2], t);
+			auto lerpPoint23 = Lerp(points[2], points[3], t);
+
 			auto lerpPoint012 = Lerp(lerpPoint01, lerpPoint12, t);
-			bezierPoints[i] = lerpPoint012;
+			auto lerpPoint123 = Lerp(lerpPoint12, lerpPoint23, t);
+
+			auto lerpPoint0123 = Lerp(lerpPoint012, lerpPoint123, t);
+			bezierPoints[i] = lerpPoint0123;
 		}
 
 		//lines
