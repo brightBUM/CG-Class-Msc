@@ -109,6 +109,15 @@ void FPSCounter(GLFWwindow* window)
 	}
 }
 
+struct Material
+{
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+	float shininess;
+};
+
+
 int main()
 {
 #pragma region WindowCreation
@@ -298,6 +307,33 @@ int main()
 	 -0.5f, -0.5f, -0.5f,    0.0f, -1.0f, 0.0f,   0.0f, 1.0f
 	};
 
+	Material materialValues[] = {
+		{  glm::vec3(0.0215,0.1745,0.0215)  ,glm::vec3(0.07568,0.61424,0.07568),glm::vec3(0.633,0.727811,0.633)      ,0.6},              //emerald
+		{  glm::vec3(0.135,0.2225,0.1575)   ,glm::vec3(0.54,0.89,0.63)         ,glm::vec3(0.316228,0.316228,0.316228),0.1},                 //jade
+		{  glm::vec3(0.05375,0.05,0.06625)  ,glm::vec3(0.18275,0.17,0.22525)   ,glm::vec3(0.332741,0.328634,0.346435),0.3},                  //obsidian
+		{  glm::vec3(0.25,0.20725,0.20725)  ,glm::vec3(1,0.829,0.829)          ,glm::vec3(0.296648,0.296648,0.296648),0.088},               //pearl
+		{  glm::vec3(0.1745,0.01175,0.01175),glm::vec3(0.61424,0.04136,0.04136),glm::vec3(0.727811,0.626959,0.626959),0.6},                 //ruby
+		{  glm::vec3(0.1,0.18725,0.1745)    ,glm::vec3(0.396,0.74151,0.69102)  ,glm::vec3(0.297254,0.30829,0.306678) ,0.1},              //turquoise
+		{  glm::vec3(0.329412,0.223529,0.027451),glm::vec3(0.780392,0.568627,0.113725),	glm::vec3(0.992157,0.941176,0.807843),0.21794872},  //brass
+		{  glm::vec3(0.2125,0.1275,0.054),	glm::vec3(0.714,0.4284,0.18144)     ,glm::vec3(0.393548,0.271906,0.166721),	0.2},            //bronze
+		{  glm::vec3(0.25,0.25,0.25)        ,glm::vec3(0.4,0.4,0.4)             ,glm::vec3(0.774597,0.774597,0.774597),	0.6},            //chrome
+		{  glm::vec3(0.19125,0.0735,0.0225)  ,glm::vec3(0.7038,0.27048,0.0828)	  ,glm::vec3(0.256777,0.137622,0.086014),0.1},           //copper
+		{  glm::vec3(0.24725,0.1995,0.0745)  ,glm::vec3(0.75164,0.60648,0.22648)  ,glm::vec3(0.628281,0.555802,0.366065),0.4},           //gold
+		{  glm::vec3(0.19225,0.19225,0.19225),glm::vec3(0.50754,0.50754,0.50754)  ,glm::vec3(0.508273,0.508273,0.508273),0.4},           //silver
+		{  glm::vec3(0.0,0.0,0.0)            ,glm::vec3(0.01,0.01,0.01)	          ,glm::vec3(0.50,0.50,0.50),	.25 },                   //black plastic
+		{  glm::vec3(0.0,0.1,0.06)           ,glm::vec3(0.0,0.50980392,0.50980392),glm::vec3(0.50196078,0.50196078,0.50196078),	.25},   //cyan plastic
+		{  glm::vec3(0.0,0.0,0.0)            ,glm::vec3(0.1	,0.35,0.1)            ,glm::vec3(0.45,0.55,0.45),.25    },                 //green plastic
+		{  glm::vec3(0.0,0.0,0.0)            ,glm::vec3(0.5	,0.0,0.0)             ,glm::vec3(0.7,0.6   ,0.6),.25    },                 //red plastic
+		{  glm::vec3(0.0,0.0,0.0)            ,glm::vec3(0.55	,0.55,0.55)	      ,glm::vec3(0.70,0.70,0.70),.25    },                //white plastic
+		{  glm::vec3(0.0,0.0,0.0)            ,glm::vec3(0.5	,0.5,0.0)             ,glm::vec3(0.60,0.60,0.50),.25    },                 //yellow plastic
+		{  glm::vec3(0.02,0.02,0.02)         ,glm::vec3(0.01,0.01,0.01)	          ,glm::vec3(0.4,0.4   ,0.4),.078125},                //black rubber
+		{  glm::vec3(0.0,0.05,0.05)          ,glm::vec3(0.4	,0.5,0.5)             ,glm::vec3(0.04,0.7,0.7)  ,.078125},               //cyan rubber
+		{  glm::vec3(0.0,0.05,0.0)           ,glm::vec3(0.4	,0.5,0.4)             ,glm::vec3(0.04,0.7,0.04) ,.078125},               //green rubber
+		{  glm::vec3(0.05,0.0,0.0)           ,glm::vec3(0.5	,0.4,0.4)             ,glm::vec3(0.7,0.04,0.04) ,.078125},               //red rubber
+		{  glm::vec3(0.05,0.05,0.05)         ,glm::vec3(0.5,0.5,0.5)              ,glm::vec3(0.7,0.7,0.7)   ,.078125},               //white rubber
+		{  glm::vec3(0.05,0.05,0.0)          ,glm::vec3(0.5,0.5,0.4)	          ,glm::vec3(0.7,0.7,0.04)  ,.078125  }              //yellow rubber
+	};
+
 	SphereData sphereData = GenerateSphere(0.5f, 8, 8);
 	
 
@@ -340,19 +376,19 @@ int main()
 	LoadTexture(texture_1, "Resources/Textures/minecraft blocks/bricks_s.png");
 	LoadTexture(texture_2, "Resources/Textures/minecraft blocks/bricks_n.png");*/
 
-	LoadTexture(texture_0, "Resources/Textures/container2.png");
-	LoadTexture(texture_1, "Resources/Textures/container2_specular2.png");
+	/*LoadTexture(texture_0, "Resources/Textures/container2.png");
+	LoadTexture(texture_1, "Resources/Textures/container2_specular2.png");*/
 
 	defaultShader.use();
 	//circleShader.SetInt("texSampler_0", 0);
-	defaultShader.SetInt("material.diffuse", 0);
+	/*defaultShader.SetInt("material.diffuse", 0);
 	defaultShader.SetInt("material.specular", 1);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_0);
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture_1);
+	glBindTexture(GL_TEXTURE_2D, texture_1);*/
 
 
 	//lighting params
@@ -476,17 +512,20 @@ int main()
 		defaultShader.SetMat4("view", view);
 		defaultShader.SetMat4("proj", proj);
 		defaultShader.SetFloat("time", glfwGetTime());
-		defaultShader.SetInt("material.specularStrength", 128);
 		defaultShader.SetVec3("lightPos", lightPos);
 		defaultShader.SetVec3("lightColor", lightColor);
 		defaultShader.SetVec3("camPos", camera.Position);
-		defaultShader.SetVec3("material.ambient", glm::vec3(0.2f));
+		//materials
+		defaultShader.SetVec3("material.ambient", materialValues[0].ambient);
+		defaultShader.SetVec3("material.diffuse", materialValues[0].diffuse);
+		defaultShader.SetVec3("material.specular", materialValues[0].specular);
+		defaultShader.SetFloat("material.shininess", 64.0f);
 		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
-		glActiveTexture(GL_TEXTURE0);
+		/*glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture_0);
 
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture_1);
+		glBindTexture(GL_TEXTURE_2D, texture_1);*/
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -501,36 +540,35 @@ int main()
 		lightShader.SetMat4("proj", proj);
 		lightShader.SetVec3("objectColor", lightColor);
 		
-		
 
 		glBindVertexArray(lightVAO);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
-		//draw sphere
-		defaultShader.use();
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-2.0f, 0.0f, 1.0f));
-		model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
-		//model = glm::scale(model, glm::vec3(1.0f));
-		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-		defaultShader.SetMat4("model", model);
-		defaultShader.SetMat4("view", view);
-		defaultShader.SetMat4("proj", proj);
-		defaultShader.SetFloat("time", glfwGetTime());
-		defaultShader.SetInt("material.specularStrength", 128);
-		defaultShader.SetVec3("lightPos", lightPos);
-		defaultShader.SetVec3("lightColor", lightColor);
-		defaultShader.SetVec3("camPos", camera.Position);
-		defaultShader.SetFloat("material.ambient", 0.2f);
-		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture_0);
+		////draw sphere
+		//defaultShader.use();
+		//model = glm::mat4(1.0f);
+		//model = glm::translate(model, glm::vec3(-2.0f, 0.0f, 1.0f));
+		//model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
+		////model = glm::scale(model, glm::vec3(1.0f));
+		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		//defaultShader.SetMat4("model", model);
+		//defaultShader.SetMat4("view", view);
+		//defaultShader.SetMat4("proj", proj);
+		//defaultShader.SetFloat("time", glfwGetTime());
+		//defaultShader.SetInt("material.specularStrength", 128);
+		//defaultShader.SetVec3("lightPos", lightPos);
+		//defaultShader.SetVec3("lightColor", lightColor);
+		//defaultShader.SetVec3("camPos", camera.Position);
+		//defaultShader.SetFloat("material.ambient", 0.2f);
+		////defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
+		///*glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, texture_0);*/
 
-		glBindVertexArray(sphereVAO);
-		glDrawElements(GL_TRIANGLES, sphereData.indices.size(), GL_UNSIGNED_INT, 0);
+		//glBindVertexArray(sphereVAO);
+		//glDrawElements(GL_TRIANGLES, sphereData.indices.size(), GL_UNSIGNED_INT, 0);
 
-		glBindVertexArray(sphereVAO);
-		glDrawElements(GL_TRIANGLES, sphereData.indices.size(), GL_UNSIGNED_INT, 0);
+		//glBindVertexArray(sphereVAO);
+		//glDrawElements(GL_TRIANGLES, sphereData.indices.size(), GL_UNSIGNED_INT, 0);
 
 
 		/* Swap front and back buffers */

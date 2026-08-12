@@ -15,16 +15,16 @@ uniform vec3 camPos ;
 struct Material
 {
 	vec3 ambient;
-	int specularStrength;
-	sampler2D diffuse;
-	sampler2D specular;
+	vec3 diffuse;
+	vec3 specular;
+	float shininess;
 };
 
 uniform Material material;
 void main()
 {
-	vec4 diffuseMap = texture(material.diffuse,TexCoord);
-	vec4 specularMap = texture(material.specular,TexCoord);
+//	vec4 diffuseMap = texture(material.diffuse,TexCoord);
+//	vec4 specularMap = texture(material.specular,TexCoord);
 	//vec4 normalMap = texture(texSampler_2,TexCoord);
 	vec3 A = Normal;
 //	A = normalize(A * 2.0 - 1.0);  // color space to direction space
@@ -41,11 +41,11 @@ void main()
 	vec3 refLightDir = reflect(-lightDir,A);
 	float specDotValue = dot(refLightDir,viewDir);
 	float specularValue = max(specDotValue,0.0f);
-	specularValue = pow(specularValue,material.specularStrength);
+	specularValue = pow(specularValue,material.shininess);
 		
 	//phong lighting
-	FragColor = vec4((diffuseMap.rgb*(diffuseValue+material.ambient)+
-					 (specularMap.rgb*specularValue)*lightColor),1.0f);
+	FragColor = vec4((material.diffuse*(diffuseValue+material.ambient)+
+					 (material.specular*specularValue)*lightColor),1.0f);
 	
 //	FragColor = vec4(A,1.0f);
 
