@@ -464,8 +464,9 @@ int main()
 
 	Camera camera(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f);
 	
-	
-
+	int materialCount = 0;
+	materialCount = sizeof(materialValues) / sizeof(Material);
+	Log("material count : " << materialCount);
 #pragma region RenderLoop
 	//game loop
 	while (!glfwWindowShouldClose(window))
@@ -486,7 +487,7 @@ int main()
 		//view matrix
 		glm::mat4 view = glm::mat4(1.0f);
 
-		glm::vec3 lightPos = glm::vec3(xPos, 0.25f, zPos);
+		glm::vec3 lightPos = glm::vec3(xPos, zPos, 0.25f);
 		glm::vec3 lightColor = glm::vec3(1.0f);
 
 		view = camera.GetViewMatrix();
@@ -503,32 +504,42 @@ int main()
 
 		///draw Cube
 		defaultShader.use();
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 1.0f));
-		//model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
-		model = glm::scale(model, glm::vec3(1.0f));
-		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
-		defaultShader.SetMat4("model", model);
-		defaultShader.SetMat4("view", view);
-		defaultShader.SetMat4("proj", proj);
-		defaultShader.SetFloat("time", glfwGetTime());
-		defaultShader.SetVec3("lightPos", lightPos);
-		defaultShader.SetVec3("lightColor", lightColor);
-		defaultShader.SetVec3("camPos", camera.Position);
-		//materials
-		defaultShader.SetVec3("material.ambient", materialValues[0].ambient);
-		defaultShader.SetVec3("material.diffuse", materialValues[0].diffuse);
-		defaultShader.SetVec3("material.specular", materialValues[0].specular);
-		defaultShader.SetFloat("material.shininess", 64.0f);
-		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
-		/*glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture_0);
 
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture_1);*/
+		for (int i = 0;i < 3;i++)
+		{
+			for (int j = 0;j < 8;j++)
+			{
+				int k = (i * 8) + j;
+				model = glm::mat4(1.0f);
+				model = glm::translate(model, glm::vec3(j * 0.75f, i*0.75f, 1.0f));
+				//model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
+				model = glm::scale(model, glm::vec3(0.5f));
+				//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
+				defaultShader.SetMat4("model", model);
+				defaultShader.SetMat4("view", view);
+				defaultShader.SetMat4("proj", proj);
+				defaultShader.SetFloat("time", glfwGetTime());
+				defaultShader.SetVec3("lightPos", lightPos);
+				defaultShader.SetVec3("lightColor", lightColor);
+				defaultShader.SetVec3("camPos", camera.Position);
+				//materials
+				defaultShader.SetVec3("material.ambient",  materialValues[k].ambient);
+				defaultShader.SetVec3("material.diffuse",  materialValues[k].diffuse);
+				defaultShader.SetVec3("material.specular", materialValues[k].specular);
+				defaultShader.SetFloat("material.shininess", 64.0f);
+				//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
+				/*glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, texture_0);
 
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, texture_1);*/
+
+				glBindVertexArray(VAO);
+				glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+			}
+			
+		}
+		
 		
 		//lighting placeholder - cube
 		lightShader.use();
