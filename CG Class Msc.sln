@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.8.12021.73 stable
+VisualStudioVersion = 18.8.12021.73
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Basic Setup", "Basic Setup\Basic Setup.vcxproj", "{E982A4CE-C823-48B1-A48F-E8F247EA076A}"
 EndProject
@@ -32,6 +32,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lighting Models", "Lighting Models\Lighting Models.vcxproj", "{7F3A2295-1A9B-470F-838C-61967EF81CE3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BezierCurve", "BezierCurve\BezierCurve.vcxproj", "{C91B9592-6334-4538-838D-CDE6FA0C6B78}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Materials", "Materials\Materials.vcxproj", "{BCAADCC9-2CC7-4C2C-9ABD-6F7DA7CA3A2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -161,6 +163,14 @@ Global
 		{C91B9592-6334-4538-838D-CDE6FA0C6B78}.Release|x64.Build.0 = Release|x64
 		{C91B9592-6334-4538-838D-CDE6FA0C6B78}.Release|x86.ActiveCfg = Release|Win32
 		{C91B9592-6334-4538-838D-CDE6FA0C6B78}.Release|x86.Build.0 = Release|Win32
+		{BCAADCC9-2CC7-4C2C-9ABD-6F7DA7CA3A2E}.Debug|x64.ActiveCfg = Debug|x64
+		{BCAADCC9-2CC7-4C2C-9ABD-6F7DA7CA3A2E}.Debug|x64.Build.0 = Debug|x64
+		{BCAADCC9-2CC7-4C2C-9ABD-6F7DA7CA3A2E}.Debug|x86.ActiveCfg = Debug|Win32
+		{BCAADCC9-2CC7-4C2C-9ABD-6F7DA7CA3A2E}.Debug|x86.Build.0 = Debug|Win32
+		{BCAADCC9-2CC7-4C2C-9ABD-6F7DA7CA3A2E}.Release|x64.ActiveCfg = Release|x64
+		{BCAADCC9-2CC7-4C2C-9ABD-6F7DA7CA3A2E}.Release|x64.Build.0 = Release|x64
+		{BCAADCC9-2CC7-4C2C-9ABD-6F7DA7CA3A2E}.Release|x86.ActiveCfg = Release|Win32
+		{BCAADCC9-2CC7-4C2C-9ABD-6F7DA7CA3A2E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
