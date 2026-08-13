@@ -526,7 +526,7 @@ int main()
 				defaultShader.SetVec3("material.ambient",  materialValues[k].ambient);
 				defaultShader.SetVec3("material.diffuse",  materialValues[k].diffuse);
 				defaultShader.SetVec3("material.specular", materialValues[k].specular);
-				defaultShader.SetFloat("material.shininess", 64.0f);
+				defaultShader.SetFloat("material.shininess", materialValues[k].shininess*128.0f);
 				//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
 				/*glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, texture_0);
