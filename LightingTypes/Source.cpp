@@ -465,24 +465,32 @@ int main()
 
 		///draw Cube
 		defaultShader.use();
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 1.0f));
-		//model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
-		model = glm::scale(model, glm::vec3(1.0f));
-		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
-		defaultShader.SetMat4("model", model);
-		defaultShader.SetMat4("view", view);
-		defaultShader.SetMat4("proj", proj);
-		defaultShader.SetFloat("time", glfwGetTime());
-		defaultShader.SetInt("material.specularStrength", 64);
-		defaultShader.SetVec3("lightPos", lightPos);
-		defaultShader.SetVec3("lightDirection", glm::vec3(0.0f, 1.0f, 1.0f));
-		defaultShader.SetVec3("lightColor", lightColor);
-		defaultShader.SetVec3("camPos", camera.Position);
-		defaultShader.SetFloat("material.ambient", 0.2f);
-		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		for (int i = 0;i < 3;i++)
+		{
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(i*1.1f, 0.0f, 1.0f));
+			//model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
+			model = glm::scale(model, glm::vec3(1.0f));
+			//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
+			defaultShader.SetMat4("model", model);
+			defaultShader.SetMat4("view", view);
+			defaultShader.SetMat4("proj", proj);
+			defaultShader.SetFloat("time", glfwGetTime());
+			defaultShader.SetInt("material.specularStrength", 64);
+			//light params
+			defaultShader.SetVec3("light.pos", lightPos);
+			//defaultShader.SetVec3("light.direction", glm::vec3(0.0f, 1.0f, 1.0f));
+			defaultShader.SetVec3("light.color", lightColor);
+			defaultShader.SetFloat("light.constant", 1.0f);
+			defaultShader.SetFloat("light.linear", 0.7f);
+			defaultShader.SetFloat("light.quadratic", 1.8f);
+
+			defaultShader.SetVec3("camPos", camera.Position);
+			defaultShader.SetFloat("material.ambient", 0.2f);
+			//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
+			glBindVertexArray(VAO);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
 
 		//lighting placeholder - cube
 		lightShader.use();
