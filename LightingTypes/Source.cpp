@@ -32,6 +32,7 @@ int frames = 0;
 double worldX, worldY;
 double prevX, prevY;
 bool wHeld;
+float cutOff = 45.0f;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void CameraInput(GLFWwindow* window, Camera& camera);
 void LightInput(GLFWwindow* window);
@@ -84,24 +85,24 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 }
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	//if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_RELEASE))
-	//{
-	//	//inc
+	if (key == GLFW_KEY_K && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
+		//inc
 
-	//	zPos -= 0.1f * paddleSpeed;
+		cutOff -= 0.1f * paddleSpeed;
 
-	//	//radius += 0.1f;
-	//}
+		//radius += 0.1f;
+	}
 
 
-	//else if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
-	//{
+	else if (key == GLFW_KEY_L && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
 
-	//	//dec
-	//	zPos += 0.1f * paddleSpeed;
-	//	//radius -= 0.1f;
+		//dec
+		cutOff += 0.1f * paddleSpeed;
+		//radius -= 0.1f;
 
-	//}
+	}
 }
 void FPSCounter(GLFWwindow* window)
 {
@@ -448,13 +449,15 @@ int main()
 		//view matrix
 		glm::mat4 view = glm::mat4(1.0f);
 
-		glm::vec3 lightPos = glm::vec3(xPos, 0.25f, zPos);
+		glm::vec3 lightPos = glm::vec3(xPos, 0.5f, zPos);
 		glm::vec3 lightColor = glm::vec3(1.0f);
 
 		view = camera.GetViewMatrix();
 
 		//view = glm::rotate(view,(float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
 		//LogVec3("lightPos", lightPos);
+
+		Log("cutoff angle : "<<cutOff);
 
 		//projection matrix
 		glm::mat4 proj = glm::mat4(1.0f);
@@ -491,6 +494,11 @@ int main()
 			defaultShader.SetFloat("light2.constant", 1.0f);
 			defaultShader.SetFloat("light2.linear", 0.7f);
 			defaultShader.SetFloat("light2.quadratic", 1.8f);
+
+			defaultShader.SetVec3("spotLight.pos", lightPos);
+			defaultShader.SetVec3("spotLight.direction", glm::vec3(0.0f, -1.0f, 0.0f));
+			defaultShader.SetVec3("spotLight.color", glm::vec3(1.0f, 1.0f, 1.0f));
+			defaultShader.SetFloat("spotLight.cutoff", glm::radians(cutOff));
 
 
 			defaultShader.SetVec3("camPos", camera.Position);

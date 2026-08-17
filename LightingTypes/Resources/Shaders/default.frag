@@ -34,6 +34,7 @@ uniform Material material;
 uniform Light light1;
 uniform Light light2;
 uniform Light spotLight;
+
 vec3 GetAmbient(vec3 diffuse)
 {
 	return diffuse*material.ambient;
@@ -86,20 +87,34 @@ void main()
 //	A = A*0.5f+0.5f; // direction space to color space 
 
 ////	Directional light
-	vec3 lightDir = normalize(vec3(0.0,-1.0,0.0));
+	vec3 lightDir = normalize(spotLight.pos - FragPos);
 
 	vec3 lightDir1 = normalize(light1.pos-FragPos);
 	vec3 lightDir2 = normalize(light2.pos-FragPos);
 
 	vec3 outputColor = vec3(0.0f);
 //Point Light 
-	outputColor += CalculatePointLight(diffuseMap.rgb,specularMap.rgb,Normal,
-										lightDir1,FragPos,camPos,light1);
-	outputColor += CalculatePointLight(diffuseMap.rgb,specularMap.rgb,Normal,
-										lightDir2,FragPos,camPos,light2);
+//	outputColor += CalculatePointLight(diffuseMap.rgb,specularMap.rgb,Normal,
+//										lightDir1,FragPos,camPos,light1);
+//	outputColor += CalculatePointLight(diffuseMap.rgb,specularMap.rgb,Normal,
+//										lightDir2,FragPos,camPos,light2);
 
+		vec3 ambient = GetAmbient(diffuseMap.rgb);
 	
-
+	float theta = dot(lightDir,normalize(-spotLight.direction));
+	if(theta>spotLight.cutoff)
+	{
+		//phong lighting
+		vec3 diffuse = GetDiffuse(diffuseMap.rgb,Normal,lightDir);
+		vec3 specular = GetSpecular(specularMap.rgb,Normal,spotLight.direction,FragPos,camPos);
+	
+		outputColor += (ambient+diffuse+length(specular))*spotLight.color;
+	}
+	else
+	{
+		//ambient lighting
+		outputColor += ambient;
+	}
 	
 	FragColor = vec4(outputColor,1.0f);
 
