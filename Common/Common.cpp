@@ -134,10 +134,10 @@ namespace Grid
         std::string vertexPath = std::string(assetPath) + "Shaders/line.vert";
         std::string fragmentPath = std::string(assetPath) + "Shaders/line.frag";
 
-        std::cout << "Vertex Path: "
+        /*std::cout << "Vertex Path: "
             << vertexPath << std::endl;
         std::cout << "Current Path: "
-            << std::filesystem::current_path() << std::endl;
+            << std::filesystem::current_path() << std::endl;*/
 
         lineShader = new Shader(vertexPath.c_str(), fragmentPath.c_str());
 

@@ -4,10 +4,13 @@ out vec4 FragColor;
 in vec2 TexCoord;
 in vec3 FragPos;
 in vec3 Normal;
+in mat3 TBN;
+
 uniform sampler2D texSampler_0;
 uniform sampler2D texSampler_1;
 uniform sampler2D texSampler_2;
 uniform float time;
+uniform float speed;
 uniform vec3 objectColor ;
 
 uniform vec3 camPos ;
@@ -57,6 +60,7 @@ vec3 GetSpecular(vec3 specular,vec3 normal,vec3 lightDir,vec3 FragPos,vec3 camPo
 
 vec3 CalculatePointLight(Light light,vec3 Normal,vec3 FragPos,vec3 camPos,vec3 diffuseMap,vec3 specularMap)
 {
+//	vec3 C_lightPos = TBN*light.pos;
 	vec3 lightDir = normalize(light.pos-FragPos);
 
 	//Point Light 
@@ -80,19 +84,31 @@ vec3 CalculatePointLight(Light light,vec3 Normal,vec3 FragPos,vec3 camPos,vec3 d
 
 void main()
 {
-	vec4 diffuseMap = texture(texSampler_0,TexCoord);
-	vec4 specularMap = texture(texSampler_1,TexCoord);
-	vec3 normalMap = texture(texSampler_2,TexCoord).rgb;
+	vec2 uv = TexCoord;
+
+	uv.x -= time*speed;
+
+	vec4 diffuseMap = texture(texSampler_0,uv);
+	vec4 specularMap = texture(texSampler_1,uv);
+	vec3 normalMap = texture(texSampler_2,uv).rgb;
 	normalMap = normalize(normalMap * 2.0 - 1.0);  // color space to direction space
+	
+	normalMap.y *= -1.0;
+	normalMap = normalize(normalMap);
+	vec3 worldNormal = normalize(TBN * normalMap);
 //	A = A*0.5f+0.5f; // direction space to color space 
 
 ////	Directional light
 //	vec3 lightDir = normalize(light.direction);
+
+	
+
 	vec3 outputColor = vec3(0.0f);
 	
 	for(int i=0;i<6;i++)
 	{
-		vec3 pointLightOutput = CalculatePointLight(lights[i],Normal,FragPos,
+
+		vec3 pointLightOutput = CalculatePointLight(lights[i],worldNormal,FragPos,
 		camPos,diffuseMap.rgb,specularMap.rgb);
 
 		outputColor += pointLightOutput;

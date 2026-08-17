@@ -20,7 +20,7 @@ float paddleSpeed = 2.0f;
 glm::vec2 centre(0.5f, 0.5f);
 float radius = 0.5f;
 int selectedLight = 1;
-
+float speed = 0.0f;
 double worldX, worldY;
 double prevX, prevY;
 bool wHeld;
@@ -94,6 +94,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	//	//radius -= 0.1f;
 
 	//}
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+	{
+		speed = speed == 0.5f ? 0.0f : 0.5f;
+
+	}
 }
 
 int main()
@@ -147,85 +152,71 @@ int main()
 		1,2,3
 	};
 
-	//cube - pos , col
-	float cubeVertices[] = {
-		// position           // color
-		-0.5f,-0.5f,-0.5f,    1.0f,0.0f,0.0f,   // 0
-		 0.5f,-0.5f,-0.5f,    0.0f,1.0f,0.0f,   // 1
-		 0.5f, 0.5f,-0.5f,    0.0f,0.0f,1.0f,   // 2
-		-0.5f, 0.5f,-0.5f,    1.0f,1.0f,0.0f,   // 3
+//quad with TBN matrix
+	// positions
+	glm::vec3 pos1(-1.0f, 1.0f, 0.0f);
+	glm::vec3 pos2(-1.0f, -1.0f, 0.0f);
+	glm::vec3 pos3(1.0f, -1.0f, 0.0f);
+	glm::vec3 pos4(1.0f, 1.0f, 0.0f);
+	// texture coordinates
+	glm::vec2 uv1(0.0f, 1.0f);
+	glm::vec2 uv2(0.0f, 0.0f);
+	glm::vec2 uv3(1.0f, 0.0f);
+	glm::vec2 uv4(1.0f, 1.0f);
+	// normal vector
+	glm::vec3 nm(0.0f, 0.0f, 1.0f);
 
-		-0.5f,-0.5f, 0.5f,    1.0f,0.0f,1.0f,   // 4
-		 0.5f,-0.5f, 0.5f,    0.0f,1.0f,1.0f,   // 5
-		 0.5f, 0.5f, 0.5f,    1.0f,1.0f,1.0f,   // 6
-		-0.5f, 0.5f, 0.5f,    0.3f,0.3f,0.3f    // 7
+	// calculate tangent/bitangent vectors of both triangles
+	glm::vec3 tangent1, bitangent1;
+	glm::vec3 tangent2, bitangent2;
+	// triangle 1
+	// ----------
+	glm::vec3 edge1 = pos2 - pos1;
+	glm::vec3 edge2 = pos3 - pos1;
+	glm::vec2 deltaUV1 = uv2 - uv1;
+	glm::vec2 deltaUV2 = uv3 - uv1;
+
+	float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+	tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+	tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+	tangent1.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+	bitangent1.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+	bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+	bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+
+	// triangle 2
+	// ----------
+	edge1 = pos3 - pos1;
+	edge2 = pos4 - pos1;
+	deltaUV1 = uv3 - uv1;
+	deltaUV2 = uv4 - uv1;
+
+	f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+	tangent2.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+	tangent2.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+	tangent2.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+
+	bitangent2.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+	bitangent2.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+	bitangent2.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+
+
+	float quadVertices[] = {
+		// positions            // normal         // texcoords  // tangent                          // bitangent
+		pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+		pos2.x, pos2.y, pos2.z, nm.x, nm.y, nm.z, uv2.x, uv2.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+		pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+
+		pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
+		pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
+		pos4.x, pos4.y, pos4.z, nm.x, nm.y, nm.z, uv4.x, uv4.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z
 	};
-	unsigned int cubeIndices[] = {
-		// Front face
-		0, 1, 2,
-		2, 3, 0,
 
-		// Right face
-		1, 5, 6,
-		6, 2, 1,
-
-		// Back face
-		5, 4, 7,
-		7, 6, 5,
-
-		// Left face
-		4, 0, 3,
-		3, 7, 4,
-
-		// Top face
-		3, 2, 6,
-		6, 7, 3,
-
-		// Bottom face
-		4, 5, 1,
-		1, 0, 4
-	};
-
-
-	//cube - pos,uv
-	float cubeVertices2[] = {
-		// ===== FRONT FACE =====
-		//    position           uv
-		-0.5f, -0.5f,  0.5f,     0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,     1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,     1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,     0.0f, 1.0f,
-
-		// ===== BACK FACE =====
-		-0.5f, -0.5f, -0.5f,     1.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,     0.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,     0.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,     1.0f, 1.0f,
-
-		// ===== LEFT FACE =====
-		-0.5f, -0.5f, -0.5f,     0.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,     1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,     1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,     0.0f, 1.0f,
-
-		// ===== RIGHT FACE =====
-		 0.5f, -0.5f, -0.5f,     1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,     0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,     0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,     1.0f, 1.0f,
-
-		 // ===== TOP FACE =====
-		 -0.5f,  0.5f,  0.5f,     0.0f, 1.0f,
-		  0.5f,  0.5f,  0.5f,     1.0f, 1.0f,
-		  0.5f,  0.5f, -0.5f,     1.0f, 0.0f,
-		 -0.5f,  0.5f, -0.5f,     0.0f, 0.0f,
-
-		 // ===== BOTTOM FACE =====
-		 -0.5f, -0.5f,  0.5f,     0.0f, 0.0f,
-		  0.5f, -0.5f,  0.5f,     1.0f, 0.0f,
-		  0.5f, -0.5f, -0.5f,     1.0f, 1.0f,
-		 -0.5f, -0.5f, -0.5f,     0.0f, 1.0f
-	};
+	
 
 	unsigned int cubeIndices2[] = {
 		// FRONT
@@ -299,20 +290,22 @@ int main()
 	//Binding the buffer - selecting current buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	//assign vertex data to buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	/*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
 
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(8 * sizeof(float)));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(11 * sizeof(float)));
 
 	Shader defaultShader("Resources/Shaders/default.vert",
 		"Resources/Shaders/default.frag");
@@ -392,7 +385,7 @@ int main()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
 	//glPolygonMode(GL_BACK, GL_LINE);
 
-	std::cout << "starting game loop -" << std::endl;
+	std::cout << "Starting Render Loop " << std::endl;
 
 	Camera camera(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f);
 
@@ -401,7 +394,7 @@ int main()
 		for (int j = 0;j < 2;j++)
 		{
 			int k = (i*2) +j;
-			Log(k);
+			//Log(k);
 			//lightPositions[k].x = i * 1.1f;
 			lightPositions[k].y = 0.3f;
 			//lightPositions[k].z = j * 1.1f;
@@ -457,6 +450,7 @@ int main()
 		defaultShader.use();
 
 		defaultShader.SetFloat("time", glfwGetTime());
+		defaultShader.SetFloat("speed", speed);
 		defaultShader.SetInt("material.specularStrength", 64);
 		//light params
 		for (int i = 0;i < 6;i++)
@@ -479,13 +473,13 @@ int main()
 				model = glm::mat4(1.0f);
 				model = glm::translate(model, glm::vec3(i * 1.1f, 0.1f, j * 1.1f));
 				//model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
-				model = glm::scale(model, glm::vec3(1.0f));
-				//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
+				model = glm::scale(model, glm::vec3(0.5f));
+				model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 				defaultShader.SetMat4("model", model);
 
 				//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
 				glBindVertexArray(VAO);
-				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				glDrawArrays(GL_TRIANGLES, 0, 6);
 			}
 			
 		}
@@ -525,10 +519,10 @@ int main()
 }
 void CameraInput(GLFWwindow* window, Camera& camera)
 {
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
+	/*if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
 	{
 		Log("rightmouse press");
-	}
+	}*/
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
 		camera.ProcessKeyboard(FORWARD, deltaTime);
@@ -566,6 +560,7 @@ void CameraInput(GLFWwindow* window, Camera& camera)
 }
 void LightInput(GLFWwindow* window)
 {
+	
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 	{
 		selectedLight = 1;
