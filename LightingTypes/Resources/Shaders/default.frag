@@ -17,9 +17,12 @@ struct Light
 	vec3 pos ;
 	vec3 direction;
 	vec3 color ;
+	//point
 	float constant;
 	float linear;
 	float quadratic;
+	//spot
+	float cutoff;
 };
 struct Material
 {
@@ -28,8 +31,9 @@ struct Material
 };
 
 uniform Material material;
-uniform Light light;
-
+uniform Light light1;
+uniform Light light2;
+uniform Light spotLight;
 vec3 GetAmbient(vec3 diffuse)
 {
 	return diffuse*material.ambient;
@@ -54,6 +58,25 @@ vec3 GetSpecular(vec3 specular,vec3 normal,vec3 lightDir,vec3 FragPos,vec3 camPo
 	return specular*specularValue;
 }
 
+vec3 CalculatePointLight(vec3 diffuseMap,vec3 specularMap,vec3 normal,
+						 vec3 lightDir,vec3 FragPos,vec3 camPos,Light light)
+{
+	float distance    = length(light.pos - FragPos);
+	float attenuation = 1.0 / (light.constant + light.linear * distance + 
+    		    light.quadratic * (distance * distance));    
+
+	//phong lighting
+	vec3 ambient = GetAmbient(diffuseMap.rgb);
+	vec3 diffuse = GetDiffuse(diffuseMap.rgb,normal,lightDir);
+	vec3 specular = GetSpecular(specularMap.rgb,normal,lightDir,FragPos,camPos);
+	
+	ambient  *= attenuation; 
+	diffuse  *= attenuation;
+	specular *= attenuation;   
+	
+	return (ambient+diffuse+length(specular))*light.color;
+}
+
 void main()
 {
 	vec4 diffuseMap = texture(texSampler_0,TexCoord);
@@ -63,25 +86,21 @@ void main()
 //	A = A*0.5f+0.5f; // direction space to color space 
 
 ////	Directional light
-//	vec3 lightDir = normalize(light.direction);
+	vec3 lightDir = normalize(vec3(0.0,-1.0,0.0));
 
-	vec3 lightDir = normalize(light.pos-FragPos);
+	vec3 lightDir1 = normalize(light1.pos-FragPos);
+	vec3 lightDir2 = normalize(light2.pos-FragPos);
 
+	vec3 outputColor = vec3(0.0f);
 //Point Light 
-	float distance    = length(light.pos - FragPos);
-	float attenuation = 1.0 / (light.constant + light.linear * distance + 
-    		    light.quadratic * (distance * distance));    
+	outputColor += CalculatePointLight(diffuseMap.rgb,specularMap.rgb,Normal,
+										lightDir1,FragPos,camPos,light1);
+	outputColor += CalculatePointLight(diffuseMap.rgb,specularMap.rgb,Normal,
+										lightDir2,FragPos,camPos,light2);
 
-	//phong lighting
-	vec3 ambient = GetAmbient(diffuseMap.rgb);
-	vec3 diffuse = GetDiffuse(diffuseMap.rgb,Normal,lightDir);
-	vec3 specular = GetSpecular(specularMap.rgb,Normal,lightDir,FragPos,camPos);
 	
-	ambient  *= attenuation; 
-	diffuse  *= attenuation;
-	specular *= attenuation;   
-	
-	FragColor = vec4((ambient+diffuse+length(specular))*light.color,1.0f);
 
+	
+	FragColor = vec4(outputColor,1.0f);
 
 } 

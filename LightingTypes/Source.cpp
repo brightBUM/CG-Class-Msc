@@ -478,12 +478,20 @@ int main()
 			defaultShader.SetFloat("time", glfwGetTime());
 			defaultShader.SetInt("material.specularStrength", 64);
 			//light params
-			defaultShader.SetVec3("light.pos", lightPos);
+			defaultShader.SetVec3("light1.pos", glm::vec3(0.0f, 0.25f, 1.0f));
 			//defaultShader.SetVec3("light.direction", glm::vec3(0.0f, 1.0f, 1.0f));
-			defaultShader.SetVec3("light.color", lightColor);
-			defaultShader.SetFloat("light.constant", 1.0f);
-			defaultShader.SetFloat("light.linear", 0.7f);
-			defaultShader.SetFloat("light.quadratic", 1.8f);
+			defaultShader.SetVec3("light1.color", glm::vec3(0.0f, 1.0f, 1.0f));
+			defaultShader.SetFloat("light1.constant", 1.0f);
+			defaultShader.SetFloat("light1.linear", 0.7f);
+			defaultShader.SetFloat("light1.quadratic", 1.8f);
+
+			defaultShader.SetVec3("light2.pos",lightPos);
+			//defaultShader.SetVec3("light.direction", glm::vec3(0.0f, 1.0f, 1.0f));
+			defaultShader.SetVec3("light2.color", glm::vec3(1.0f, 1.0f, 1.0f));
+			defaultShader.SetFloat("light2.constant", 1.0f);
+			defaultShader.SetFloat("light2.linear", 0.7f);
+			defaultShader.SetFloat("light2.quadratic", 1.8f);
+
 
 			defaultShader.SetVec3("camPos", camera.Position);
 			defaultShader.SetFloat("material.ambient", 0.2f);
@@ -495,18 +503,28 @@ int main()
 		//lighting placeholder - cube
 		lightShader.use();
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, lightPos);
+		model = glm::translate(model, glm::vec3(0.0f, 0.25f, 1.0f));
 		model = glm::scale(model, glm::vec3(0.1f));
 		lightShader.SetMat4("model", model);
 		lightShader.SetMat4("view", view);
 		lightShader.SetMat4("proj", proj);
-		lightShader.SetVec3("objectColor", lightColor);
+		lightShader.SetVec3("objectColor", glm::vec3(0.0f, 1.0f, 1.0f));
 
 
 		glBindVertexArray(lightVAO);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, lightPos);
+		model = glm::scale(model, glm::vec3(0.1f));
+		lightShader.SetMat4("model", model);
+		lightShader.SetMat4("view", view);
+		lightShader.SetMat4("proj", proj);
+		lightShader.SetVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
+
+		glBindVertexArray(lightVAO);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 		//Log(glfwGetTime());
 
 		/* Swap front and back buffers */
