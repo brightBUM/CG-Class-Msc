@@ -89,8 +89,8 @@ void main()
 ////	Directional light
 	vec3 lightDir = normalize(spotLight.pos - FragPos);
 
-	vec3 lightDir1 = normalize(light1.pos-FragPos);
-	vec3 lightDir2 = normalize(light2.pos-FragPos);
+//	vec3 lightDir1 = normalize(light1.pos-FragPos);
+//	vec3 lightDir2 = normalize(light2.pos-FragPos);
 
 	vec3 outputColor = vec3(0.0f);
 //Point Light 
@@ -104,11 +104,8 @@ void main()
 	float theta = dot(lightDir,normalize(-spotLight.direction));
 	if(theta>spotLight.cutoff)
 	{
-		//phong lighting
-		vec3 diffuse = GetDiffuse(diffuseMap.rgb,Normal,lightDir);
-		vec3 specular = GetSpecular(specularMap.rgb,Normal,spotLight.direction,FragPos,camPos);
-	
-		outputColor += (ambient+diffuse+length(specular))*spotLight.color;
+		outputColor += CalculatePointLight(diffuseMap.rgb,specularMap.rgb,Normal,
+										lightDir,FragPos,camPos,spotLight);
 	}
 	else
 	{

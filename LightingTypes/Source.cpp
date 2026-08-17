@@ -498,7 +498,10 @@ int main()
 			defaultShader.SetVec3("spotLight.pos", lightPos);
 			defaultShader.SetVec3("spotLight.direction", glm::vec3(0.0f, -1.0f, 0.0f));
 			defaultShader.SetVec3("spotLight.color", glm::vec3(1.0f, 1.0f, 1.0f));
-			defaultShader.SetFloat("spotLight.cutoff", glm::radians(cutOff));
+			defaultShader.SetFloat("spotLight.cutoff", glm::cos(glm::radians(cutOff)));
+			defaultShader.SetFloat("spotLight.constant", 1.0f);
+			defaultShader.SetFloat("spotLight.linear", 0.7f);
+			defaultShader.SetFloat("spotLight.quadratic", 1.8f);
 
 
 			defaultShader.SetVec3("camPos", camera.Position);
