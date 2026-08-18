@@ -32,8 +32,7 @@ namespace Debug
 namespace Grid
 {
     void InitGrid(int gridSize);
-    void DrawGrid();
-
+    void DrawGrid(glm::mat4 view, glm::mat4 proj);
 }
 namespace Collision
 {

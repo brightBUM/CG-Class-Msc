@@ -166,7 +166,7 @@ namespace Grid
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
     }
-    void DrawGrid()
+    void DrawGrid(glm::mat4 view,glm::mat4 proj)
     {
         glLineWidth(1.0f);
         glBindVertexArray(lineVAO);
@@ -174,6 +174,8 @@ namespace Grid
         lineShader->SetVec3("objectColor", glm::vec3(0.5f));
         model = glm::translate(model, glm::vec3(0.0f));
         lineShader->SetMat4("model", model);
+        lineShader->SetMat4("view", view);
+        lineShader->SetMat4("proj", proj);
         glDrawArrays(GL_LINES, 0, lineVertices.size());
     }
 }

@@ -357,7 +357,6 @@ int main()
 		defaultShader.SetFloat("time", glfwGetTime());
 
 		FPSCounter(window);
-		Grid::DrawGrid();
 		
 		CameraInput(window, camera);
 
@@ -379,6 +378,8 @@ int main()
 		glm::mat4 proj = glm::mat4(1.0f);
 		//fov,aspect ratio (W/H),near plane , far plane
 		proj = glm::perspective(camera.Zoom, (float)WIDTH / HEIGHT, 0.1f, 100.0f);
+
+		Grid::DrawGrid(view,proj);
 
 		glm::mat4 model = glm::mat4(1.0f);
 
