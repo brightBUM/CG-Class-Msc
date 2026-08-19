@@ -80,7 +80,7 @@ Mesh Model::ProcessMesh(aiMesh* aiMesh, const aiScene* scene)
 		{
 			vertex.texCoords = glm::vec2(0.0f,0.0f);
 		}
-
+		vertices.push_back(vertex);
 	}
 
 	//indices
@@ -107,6 +107,8 @@ Mesh Model::ProcessMesh(aiMesh* aiMesh, const aiScene* scene)
 
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
+
+	Log("vertices : " << vertices.size() << "indices : " << indices.size() << "textures : " << textures.size()<<" \n");
 
 	return Mesh(vertices, textures, indices);
 }
