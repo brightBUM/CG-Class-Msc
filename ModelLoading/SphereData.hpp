@@ -1,9 +1,10 @@
 #pragma once
 #include<vector>
 #include<cmath>
+#include"Mesh.h"
 struct SphereData 
 { 
-	std::vector<float> vertices; 
+	std::vector<Vertex> vertices; 
 	std::vector<unsigned int> indices; 
 }; 
 inline SphereData GenerateSphere(float radius, unsigned int sectors, unsigned int stacks)
@@ -30,21 +31,30 @@ inline SphereData GenerateSphere(float radius, unsigned int sectors, unsigned in
 			// r * cos(u) * cos(v) 
 			float y = xy * sinf(sectorAngle); 
 			// r * cos(u) * sin(v) 
-			sphere.vertices.push_back(x); 
-			sphere.vertices.push_back(y); 
-			sphere.vertices.push_back(z); 
+			
+			glm::vec3 pos;
+			pos.x = x;
+			pos.y = y;
+			pos.z = z;
+
 			// Normal (normalized position for a sphere centered at origin) 
 			float nx = x / radius;
 			float ny = y / radius; 
 			float nz = z / radius; 
-			sphere.vertices.push_back(nx); 
-			sphere.vertices.push_back(ny); 
-			sphere.vertices.push_back(nz); 
+			glm::vec3 normal;
+			normal.x = nx;
+			normal.y = ny;
+			normal.z = nz;
+
+
 			// UV coordinates
 			float u = (float)j / sectors; 
 			float v = (float)i / stacks; 
-			sphere.vertices.push_back(u); 
-			sphere.vertices.push_back(v);
+			glm::vec2 uv;
+			uv.x = u;
+			uv.y = v;
+
+			sphere.vertices.push_back(Vertex(pos, normal, uv));
 		} 
 	} 
 	// Generate indices 

@@ -13,7 +13,7 @@
 #include"Camera.h"
 #include"common.h"
 #include"Mesh.h"
-
+#include"SphereData.hpp"
 #define LogVec3(name,val) std::cout<<name <<" : "<<val.x<<" , "<< val.y << " , "<<val.z << std::endl;
 const float Deg2Rad = 3.14159265f / 180.0f;
 
@@ -145,7 +145,10 @@ int main()
 
 #pragma region Vertex Buffer
 	
-	
+	SphereData sphereData = GenerateSphere(5.0f, 8, 8);
+	std::vector<Texture> textures;
+
+	Mesh sphereMesh(sphereData.vertices, textures, sphereData.indices);
 
 	Shader defaultShader("Resources/Shaders/default.vert",
 		"Resources/Shaders/default.frag");
@@ -190,7 +193,7 @@ int main()
 
 		FPSCounter(window);
 
-
+		sphereMesh.DrawMesh(defaultShader);
 		CameraInput(window, camera);
 		LightInput(window);
 
