@@ -144,94 +144,15 @@ int main()
 #pragma endregion
 
 #pragma region Vertex Buffer
-
+	
 	
 
 	Shader defaultShader("Resources/Shaders/default.vert",
 		"Resources/Shaders/default.frag");
-	/*Shader circleShader("Resources/Shaders/default.vert",
-		"Resources/Shaders/circle.frag");*/
+	
 
-		//circleShader.use();
-
-	unsigned int texture_0, texture_1, texture_2;
-	//minecraft path
-	/*LoadTexture(texture_0, "Resources/Textures/minecraft blocks/bricks.png");
-	LoadTexture(texture_1, "Resources/Textures/minecraft blocks/bricks_s.png");
-	LoadTexture(texture_2, "Resources/Textures/minecraft blocks/bricks_n.png");*/
-
-	LoadTexture(texture_0, "Resources/Textures/2k_earth_daymap.jpg");
-	LoadTexture(texture_1, "Resources/Textures/long_white_tiles_arm_2k.png");
-	LoadTexture(texture_2, "Resources/Textures/long_white_tiles_nor_gl_2k.png");
-
-	defaultShader.use();
-	//circleShader.SetInt("texSampler_0", 0);
-	defaultShader.SetInt("texSampler_0", 0);
-	defaultShader.SetInt("texSampler_1", 1);
-	defaultShader.SetInt("texSampler_2", 2);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture_0);
-
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture_1);
-
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, texture_2);
-
-
-	//lighting params
-	unsigned int lightVAO, lightVBO, lightEBO;
-
-	glGenVertexArrays(1, &lightVAO);
-	glGenBuffers(1, &lightVBO);
-	glGenBuffers(1, &lightEBO);
-
-	glBindVertexArray(lightVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices3), cubeVertices3, GL_STATIC_DRAW);
-
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lightEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices2), cubeIndices2, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	/*Shader lineShader("Resources/Shaders/line.vert",
-		"Resources/Shaders/light.frag");
-
-	lineShader.use();*/
-
-	Shader lightShader("Resources/Shaders/light.vert",
-		"Resources/Shaders/light.frag");
-
-	Shader gouradShader("Resources/Shaders/gourad.vert",
-		"Resources/Shaders/gourad.frag");
-
-	//sphere params
-	unsigned int sphereVAO, sphereVBO, sphereEBO;
-
-	glGenBuffers(1, &sphereVBO);
-	glGenBuffers(1, &sphereEBO);
-	glGenVertexArrays(1, &sphereVAO);
-
-	glBindVertexArray(sphereVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-	glBufferData(GL_ARRAY_BUFFER, sphereData.vertices.size() * sizeof(float), sphereData.vertices.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphereData.indices.size() * sizeof(unsigned int), sphereData.indices.data(), GL_STATIC_DRAW);
-
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	
+	
 #pragma endregion
 
 #pragma region Shaders
@@ -294,86 +215,7 @@ int main()
 
 		///draw Cube
 		defaultShader.use();
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 1.0f));
-		//model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
-		model = glm::scale(model, glm::vec3(1.0f));
-		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
-		defaultShader.SetMat4("model", model);
-		defaultShader.SetMat4("view", view);
-		defaultShader.SetMat4("proj", proj);
-		defaultShader.SetFloat("time", glfwGetTime());
-		defaultShader.SetInt("material.specularStrength", 128);
-		defaultShader.SetVec3("lightPos", lightPos);
-		defaultShader.SetVec3("lightColor", lightColor);
-		defaultShader.SetVec3("camPos", camera.Position);
-		defaultShader.SetFloat("material.ambient", 0.2f);
-		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture_1);
-
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-		//lighting placeholder - cube
-		lightShader.use();
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, lightPos);
-		model = glm::scale(model, glm::vec3(0.1f));
-		lightShader.SetMat4("model", model);
-		lightShader.SetMat4("view", view);
-		lightShader.SetMat4("proj", proj);
-		lightShader.SetVec3("objectColor", lightColor);
-
-
-
-		glBindVertexArray(lightVAO);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-		//draw sphere
-		defaultShader.use();
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-2.0f, 0.0f, 1.0f));
-		model = glm::rotate(model, -90.0f * Deg2Rad, glm::vec3(1.0f, 0.0f, 0.0f));
-		//model = glm::scale(model, glm::vec3(1.0f));
-		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-		defaultShader.SetMat4("model", model);
-		defaultShader.SetMat4("view", view);
-		defaultShader.SetMat4("proj", proj);
-		defaultShader.SetFloat("time", glfwGetTime());
-		defaultShader.SetInt("material.specularStrength", 128);
-		defaultShader.SetVec3("lightPos", lightPos);
-		defaultShader.SetVec3("lightColor", lightColor);
-		defaultShader.SetVec3("camPos", camera.Position);
-		defaultShader.SetFloat("material.ambient", 0.2f);
-		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture_0);
-
-		glBindVertexArray(sphereVAO);
-		glDrawElements(GL_TRIANGLES, sphereData.indices.size(), GL_UNSIGNED_INT, 0);
-
-		gouradShader.use();
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-4.0f, 0.0f, 1.0f));
-		//model = glm::rotate(model, -90.0f*Deg2Rad,glm::vec3(1.0f,0.0f,0.0f));
-		//model = glm::scale(model, glm::vec3(1.0f));
-		//model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
-		gouradShader.SetMat4("model", model);
-		gouradShader.SetMat4("view", view);
-		gouradShader.SetMat4("proj", proj);
-		gouradShader.SetFloat("time", glfwGetTime());
-		gouradShader.SetInt("material.specularStrength", 128);
-		gouradShader.SetVec3("lightPos", lightPos);
-		gouradShader.SetVec3("lightColor", lightColor);
-		gouradShader.SetVec3("camPos", camera.Position);
-		gouradShader.SetFloat("material.ambient", 0.2f);
-		//defaultShader.SetVec3("objectColor", glm::vec3(0.5f, 1.0f, 0.0f));
-
-
-		glBindVertexArray(sphereVAO);
-		glDrawElements(GL_TRIANGLES, sphereData.indices.size(), GL_UNSIGNED_INT, 0);
-
+		
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
